@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.webank.wedatasphere.schedulis</groupId>
     <artifactId>schedulis</artifactId>
-    <version>0.6.2</version>
+    <version>0.7.0</version>
   </parent>
 
   <dependencies>
@@ -175,6 +175,10 @@
         <exclusion>
           <artifactId>log4j-api</artifactId>
           <groupId>org.apache.logging.log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.pentaho</groupId>
+          <artifactId>pentaho-aggdesigner-algorithm</artifactId>
         </exclusion>
         <exclusion>
           <artifactId>log4j-core</artifactId>
@@ -384,8 +388,6 @@
                   todir="${project.build.directory}/jobtypes/java"/>
                 <copy file="${project.build.directory}/azkaban-jobtype-${schedulis.version}.jar"
                   todir="${project.build.directory}/jobtypes/spark"/>
-                <copy file="${project.build.directory}/azkaban-jobtype-${schedulis.version}.jar"
-                      todir="${project.build.directory}/jobtypes/linkis"/>
               </target>
             </configuration>
             <goals>

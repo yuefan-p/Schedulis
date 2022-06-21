@@ -3,19 +3,38 @@
 ## 一、环境检查<a name="环境检查">
 
 1. 请基于 Linux 操作系统操作（建议 CentOS）
-2. 创建新用户 hadoop， 并为该用户赋予 root 权限,用于部署schedulis
+2. 创建新用户 hadoop， 并为该用户赋予 root 权限，用于部署 Schedulis
 3. 准备好 MySQL（版本5.5+） 的客户端和服务端
 4. 请确保已安装并且正确配置 JDK（版本1.8+）
 5. 配置集群各节点之间的免密码登录
-6. 请准备一台已经正确安装和配置 Maven（版本3.3+） 和 Git 的机器，用来编译代码
+6. 请准备一台已经正确安装和配置 Maven（版本 3.3 - 3.8.1） 和 Git 的机器，用来编译代码
 7. 为需要部署的机器运行项目 bin 目录下的环境检测脚本 checkEnv.sh，确认基础环境已经准备完成。若是报错，请用户为部署节点准备好基础环境
 
 ## 二、获取项目文件并编译打包（如使用 Releases 中的zip 包则可跳过该步骤）<a name="编译打包">
 
 1. 使用 Git 下载 Schedulis 项目文件 git clone https://github.com/WeBankFinTech/Schedulis.git
-2. 下载jobtype插件的依赖和配置，链接：https://share.weiyun.com/RgAiieMx 密码：det7rf（由于文件大小较大，所以放在网盘进行管理）
-3. 进入项目文件的根目录下，将第二步中下载的jobtypes文件解压后，将整个jobtypes文件夹放入项目module（azkaban-jobtyope）的根目录，然后使用 Maven 来编译打包整个项目 ```mvn clean install -Dmaven.test.skip=true```    
+2. 下载 jobtypes 插件的依赖和配置，链接：https://share.weiyun.com/RgAiieMx 密码：det7rf（由于文件大小较大，所以放在网盘进行管理），下载时请注意对应版本号（Schedulis 
+   jobtypes > Schedulis xxx(version) > jobtypes.zip）
+3. 进入项目文件的根目录下，将第二步中下载的 jobtypes 文件解压后，得到 jobtypes 文件夹，将整个 jobtypes 文件夹放入项目 maven module（azkaban-jobtyope）的根目录，然后使用 
+   Maven 
+   来编译打包整个项目 
+```mvn 
+   clean install -Dmaven.test.skip=true```    
    待整个项目编译打包成功后，用户可以在这两个模块(azkaban-web-server 和 azkaban-exec-server)各自的 target 目录下找到相应的 .ZIP 安装包(schedulis_***_web.zip 和 schedulis_***_exec.zip)。<font color="red">这里需要注意：打包完成后一定要确认安装包内是否有plugins目录，如发现安装包没有plugins，或者plugins为空，则分别进入 WebServer 和 ExecServer 目录，为它们单独再次编译即可,如果没有打包进来则无法使用插件</font>。
+4. 编译打包后目录说明：
+   1. schedulis_***_web.zip 对应 Schedulis 的 WebServer
+      1. bin -- WebServer 的启停脚本
+      2. conf -- WebServer 的相关配置
+      3. lib -- WebServer 依赖库
+      4. plugins -- WebServer 插件
+      5. web -- WebServer 的 web 资源
+
+   2. schedulis_***_exec.zip 对应 Schedulis 的 ExecutorServer
+      1. bin -- Executor Server 的启停脚本
+      2. conf -- Executor Server 的相关配置
+      3. lib -- Executor Server 依赖库
+      4. plugins -- Executor 插件
+
 
 ## 三、确定环境部署模式
 
@@ -40,10 +59,10 @@ HA 部署模式，即多个 WebServer 组合一个及以上 ExecutorServer 的�
 
 ### 一）、复制、解压安装包
 
-1. 将以下文件复制到需要部署的 Executor 或者 WebServer 服务器:    
+1. 使用已创建的 hadoop 用户将以下文件复制到需要部署的 Executor 或者 WebServer 服务器:    
     - Executor 或者 WebServer 安装包 
     - 项目文件根目录下的 bin/construct 目录中的数据库初始化脚本 hdp\_schedulis\_deploy\_script.sql    
-2. 将安装包解压到合适的安装目录下，譬如：/appcom/Install/AzkabanInstall， 并将安装的根目录 /appcom 以及其下子目录的属主转换为 hadoop 用户， 且赋予 775 权限（/appcom/Install/AzkabanInstall/ 为默认安装目录，建议创建该路径并将其作为安装路径，可避免一些路径的修改）
+2. 将安装包解压到合适的安装目录下，譬如：/appcom/Install/AzkabanInstall， 并确认安装的根目录 /appcom 以及其下子目录的属主为 hadoop 用户， 且赋予 775 权限（/appcom/Install/AzkabanInstall/ 为默认安装目录，建议创建该路径并将其作为安装路径，可避免一些路径的修改）
 
 ### 二）、初始化数据库
 
@@ -69,6 +88,24 @@ mysql> source 脚本存放目录/hdp_schedulis_deploy_script.sql
 ```
 
 ### 三）、修改配置<a name="配置">
+部署时，建议将配置文件放置统一位置（如：`/appcom/config/schedulis-config/`）进行管理，并将项目 `bin/config` 目录下的目录全部复制到新建的`schedulis-config`目录,
+再通过软链的方式链接至服务下的 `conf` 
+目录下的各个配置文件，方便后续的升级以及重新部署。 
+例如：
+```shell
+# Executor 服务配置软链
+ln -sf /appcom/Install/AzkabanInstall/schedulis_{{version}}_exec /appcom/Install/AzkabanInstall/schedulis-exec;
+ln -sf /appcom/config/schedulis-config/schedulis-exec/exec_azkaban.properties /appcom/Install/AzkabanInstall/schedulis-exec/conf/azkaban.properties;
+ln -sf /appcom/config/schedulis-config/schedulis-exec/common.properties /appcom/Install/AzkabanInstall/schedulis-exec/plugins/jobtypes/common.properties;
+ln -sf /appcom/config/schedulis-config/schedulis-exec/commonprivate.properties /appcom/Install/AzkabanInstall/schedulis-exec/plugins/jobtypes/commonprivate.properties;
+ln -sf /appcom/config/schedulis-config/schedulis-exec/exec_plugin.properties /appcom/Install/AzkabanInstall/schedulis-exec/plugins/alerter/WebankIMS/conf/plugin.properties;
+
+# WebServer 配置软链
+ln -sf /appcom/Install/AzkabanInstall/schedulis_{{version_new}}_web /appcom/Install/AzkabanInstall/schedulis-web;
+ln -sf /appcom/config/schedulis-config/schedulis-web/web_azkaban.properties /appcom/Install/AzkabanInstall/schedulis-web/conf/azkaban.properties;
+ln -sf /appcom/config/schedulis-config/schedulis-web/web_plugin_ims.properties /appcom/Install/AzkabanInstall/schedulis-web/plugins/alerter/WebankIMS/conf/plugin.properties;
+ln -sf /appcom/config/schedulis-config/schedulis-web/web_plugin_system.properties /appcom/Install/AzkabanInstall/schedulis-web/plugins/viewer/system/conf/plugin.properties;
+```
 
 #### 1. 修改 host.properties 文件
 
@@ -91,9 +128,9 @@ executor3_hostname=3
 
 #### 2. Executor Server 配置修改<a name="exec-config">
 
-##### 执行包修改
+##### 执行包修改（自动化部署无需执行该步骤）
 
-项目文件根目录下的 bin/construct 目录中任务执行依赖的包 execute-as-user ，复制到azkaban-exec-server的lib下，并且更新权限
+项目文件根目录下的 bin/construct 目录中任务执行依赖的包 execute-as-user ，复制到 Executor Server 的 lib 下（schedulis_xxx_exec/lib/），并且更新权限
 ```
 sudo chown root execute-as-user
 sudo chmod 6050 execute-as-user
@@ -105,22 +142,18 @@ sudo chmod 6050 execute-as-user
 
 ```properties
 #项目 MySQL 服务端地址（密码用 Java base64 加密）
-mysql.port=3306
+mysql.port=
 mysql.host=
 mysql.database=
 mysql.user=
 mysql.password=
 mysql.numconnections=100
 
-#Executor 线程相关配置
-executor.maxThreads=60
+#Executor Server 默认端口为 12321，如有冲突可修改
 executor.port=12321
-executor.flow.threads=30
-jetty.headerBufferSize=65536
-flow.num.job.threads=30
-#此 server id 请参考1的 host.properties，改配置会在服务启动的时候自动从host.properties中拉取
-executor.server.id=8
-checkers.num.threads=200
+
+#此 server id 请参考《1. 修改 host.properties》 中的 host.properties，改配置会在服务启动的时候自动从host.properties中拉取
+executor.server.id=
 
 #Web Sever url相关配置，port 需与 WebServer 的 conf/azkaban.properties 中的 jetty.port 一致，eg: http://localhost:8081
 azkaban.webserver.url=http://webserver_ip:webserver_port
@@ -128,7 +161,7 @@ azkaban.webserver.url=http://webserver_ip:webserver_port
 
 ##### conf/global.properties
 
-该配置文件存放在 ExecServer 安装包下的 conf 目录下，该配置文件主要存放一些 Executor 的全局属性
+该配置文件存放在 ExecServer 安装包下的 conf 目录下，该配置文件主要存放一些 Executor 的全局属性，无需修改
 
 ##### plugins/jobtypes/commonprivate.properties
 
@@ -137,14 +170,14 @@ azkaban.webserver.url=http://webserver_ip:webserver_port
 
 ```
 #以下四项配置指向对应组件的安装目录，请将它们修改成相应的组件安装目录
-hadoop.home=/appcom/Install/hadoop
-hadoop.conf.dir=/appcom/config/hadoop-config
-hive.home=/appcom/Install/hive
-spark.home=/appcom/Install/spark
+hadoop.home=
+hadoop.conf.dir=
+hive.home=
+spark.home=
 
-#azkaban.native.lib 请修改成ExecServer 安装目录下 lib 的所在绝对路径
+#azkaban.native.lib 请修改成 ExecServer 安装目录下 lib 的所在绝对路径
 execute.as.user=true
-azkaban.native.lib=/appcom/Install/AzkabanInstall/schedulis-exec/lib
+azkaban.native.lib=
 
 ```
 
@@ -156,22 +189,22 @@ azkaban.native.lib=/appcom/Install/AzkabanInstall/schedulis-exec/lib
 #配置集群 Hive 的元数据库（密码用 Java base64 加密）
 job.datachecker.jdo.option.name="job"
 job.datachecker.jdo.option.url=jdbc:mysql://host:3306/db_name?useUnicode=true&amp;characterEncoding=UTF-8
-job.datachecker.jdo.option.username=username
-job.datachecker.jdo.option.password=password
+job.datachecker.jdo.option.username=[username]
+job.datachecker.jdo.option.password=[password]
 
 #配置 Schedulis 的数据库地址（密码用 Java base64 加密）
 msg.eventchecker.jdo.option.name="msg"
 msg.eventchecker.jdo.option.url=jdbc:mysql://host:3306/db_name?useUnicode=true&characterEncoding=UTF-8
-msg.eventchecker.jdo.option.username=username
-msg.eventchecker.jdo.option.password=password
+msg.eventchecker.jdo.option.username=[username]
+msg.eventchecker.jdo.option.password=[password]
 
 
 #此部分依赖于第三方脱敏服务mask，暂未开源，将配置写为和job类型一样即可（密码用 Java base64 加密） 
 
 bdp.datachecker.jdo.option.name="bdp"
 bdp.datachecker.jdo.option.url=jdbc:mysql://host:3306/db_name?useUnicode=true&amp;characterEncoding=UTF-8
-bdp.datachecker.jdo.option.username=username
-bdp.datachecker.jdo.option.password=password
+bdp.datachecker.jdo.option.username=[username]
+bdp.datachecker.jdo.option.password=[password]
 
 
 ```
@@ -185,18 +218,18 @@ bdp.datachecker.jdo.option.password=password
 ```
 # webank alerter settings
 alert.type=WeBankAlerter
-alarm.server=ims_ip
-alarm.port=10812
-alarm.subSystemID=5003
+alarm.server=
+alarm.port=
+alarm.subSystemID=
 alarm.alertTitle=schedulis Aleter Message
 alarm.alerterWay=1,2,3
-alarm.reciver=root
+alarm.reciver=
 alarm.toEcc=0
 ```
 
 ##### plugins/jobtypes/linkis/plugin.properties
 
-若用户安装了 Linkis，则修改此配置文件来对接 Linkis，该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下
+若用户安装了 Linkis（[Linkis 插件安装](#Linkis 安装)），则修改此配置文件来对接 Linkis，该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下
 ```
 #将该值修改为 Linkis 的gateway地址
 wds.linkis.gateway.url=
@@ -204,11 +237,12 @@ wds.linkis.gateway.url=
 
 ##### plugins/jobtypes/linkis/private.properties
 
-该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下，主要是设置 jobtype 所需的 lib 所在位置
+若用户安装了 Linkis（[Linkis 插件安装](#Linkis 安装)），该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下，主要是设置 jobtype 所需的 lib 
+所在位置
 
 ```properties
 #将该值修改为 Linkis 插件包下的 lib 目录
-jobtype.lib.dir=/appcom/Install/AzkabanInstall/linkis/lib
+jobtype.lib.dir=
 ```
 
 #### 3. Web Server 配置文件修改<a name="web-config">
@@ -227,21 +261,8 @@ mysql.user=
 mysql.password=
 mysql.numconnections=100
 
-#Azkaban jetty server properties
-jetty.port=8081
-
-#Executor 选择策略配置
-azkaban.use.multiple.executors=true
-azkaban.executorselector.filters=StaticRemainingFlowSize
-azkaban.queueprocessing.enabled=true
-azkaban.webserver.queue.size=100000
-azkaban.activeexecutor.refresh.milisecinterval=50000
-azkaban.activeexecutor.refresh.flowinterval=5
-azkaban.executorinfo.refresh.maxThreads=5
-azkaban.executorselector.comparator.Memory=3
-#azkaban.executorselector.comparator.CpuUsage=2
-azkaban.executorselector.comparator.LastDispatched=1
-azkaban.executorselector.comparator.NumberOfAssignedFlowComparator=1
+#项目 web 端访问的端口
+jetty.port=
 
 # LDAP 登录校验开关（如不需要 LDAP 校验可关闭）
 ladp.switch=false
@@ -253,7 +274,7 @@ ladp.port=ldap_port
 #### 4. 修改日志存放目录（按需修改）
 
 Schedulis 项目的日志默认存放路径为 /appcom/logs/azkaban, 目录下存放的就是 Executor 和 Web 两个服务相关的日志   
-若选择使用默认存放路径，则需要按要求将所需路径提前创建出来， 并将文件属主转换为 hadoop，赋予 775 权限；若要使用自定义的日志存放路径，则需要创建好自定义路径，并修改 ExecServer 和 WebServer 安装包的以下文件：  
+若选择使用默认存放路径，则需要按要求将所需路径提前创建出来， 确认文件属主为 hadoop，赋予 775 权限；若要使用自定义的日志存放路径，则需要创建好自定义路径，并修改 ExecServer 和 WebServer 安装包的以下文件：  
 
 1. Executor 下的 bin/internal/internal-start-executor.sh 和 Web 下的 bin/internal/internal-start-web.sh 文件中的 KEY 值 logFile， 设为自定义日志存放路径, 以及在两个文件中关于 “Set the log4j configuration file” 中的 -Dlog4j.log.dir 也修改为自定义的日志路径 
 2. 两个服务中的 bin/internal/util.sh 文件中的 KEY 值 shutdownFile，改为自定义日志路径
@@ -478,7 +499,20 @@ pwd : Abcd1234
 4. 成功登录后，请参考用户使用手册，自己创建一个项目并上传测试运行
 5. 运行成功，恭喜 Schedulis 成功安装了
 
-## 八、邮件告警配置
+## 八、Linkis 插件安装<a name="Linkis 安装">
+
+### 1. 自动化部署安装
+
+[Schedulis Linkis JobType 安装](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/安装部署/Schedulis_Linkis_JobType安装文档.md)
+
+### 2. 手动安装
+
+1. 下载 linkis 插件的依赖和配置，链接：https://share.weiyun.com/RgAiieMx 密码：det7rf（由于文件大小较大，所以放在网盘进行管理），下载时请注意对应版本号（Schedulis
+   jobtypes > Schedulis xxx(version) > linkis-jobtype-xxx.zip）
+2. 将 linkis-jobtype-xxx.zip 放至 `schedulis_version_exec/plugins/jobtypes/`目录下并解压得到 linkis 文件夹
+3. 修改 plugin.properties，private.properties 配置
+
+## 九、邮件告警配置
 
 1. 修改 WebServer 的 conf/azkaban.properties
 
@@ -507,7 +541,7 @@ pwd : Abcd1234
    alerter.name=azkaban
    ```
 
-## 九、QA 环节
+## 十、QA 环节
 1. 如何查看自己本机 Hostname ?   
 命令行输入  ```hostname```
 
