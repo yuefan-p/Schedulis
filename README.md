@@ -41,6 +41,8 @@ DataSphere Studio 可以将编辑好的工作流一键发布到 Schedulis 进行
 
 [Schedulis AppConn 插件安装](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/SchedulisAppConn%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3.md)
 
+[Schedulis 版本升级手册](./docs/schedulis_upgrade_manual_cn.md)
+
 # Communication
 
 如果您想得到最快的响应，请给我们提 issue，或者扫码进群：
