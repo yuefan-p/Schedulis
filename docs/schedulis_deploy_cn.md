@@ -17,9 +17,7 @@
    jobtypes > Schedulis xxx(version) > jobtypes.zip）
 3. 进入项目文件的根目录下，将第二步中下载的 jobtypes 文件解压后，得到 jobtypes 文件夹，将整个 jobtypes 文件夹放入项目 maven module（azkaban-jobtyope）的根目录，然后使用 
    Maven 
-   来编译打包整个项目 
-```mvn 
-   clean install -Dmaven.test.skip=true```    
+   来编译打包整个项目 `mvn clean install -Dmaven.test.skip=true`
    待整个项目编译打包成功后，用户可以在这两个模块(azkaban-web-server 和 azkaban-exec-server)各自的 target 目录下找到相应的 .ZIP 安装包(schedulis_***_web.zip 和 schedulis_***_exec.zip)。<font color="red">这里需要注意：打包完成后一定要确认安装包内是否有plugins目录，如发现安装包没有plugins，或者plugins为空，则分别进入 WebServer 和 ExecServer 目录，为它们单独再次编译即可,如果没有打包进来则无法使用插件</font>。
 4. 编译打包后目录说明：
    1. schedulis_***_web.zip 对应 Schedulis 的 WebServer
