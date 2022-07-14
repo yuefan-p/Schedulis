@@ -285,7 +285,7 @@ public class SystemServlet extends LoginAbstractAzkabanServlet {
                                 // 将添加的代理用户加入代理用户集 ,多个代理用户用逗号分隔
                                 proxyUser = dbProxyUsers + "," + proxyUser;
 
-                                logger.info("for update value is userId:{}, password:{}, roleId:{}, proxyUser:{}, departmentId:{}", userId, password, roleId, proxyUser, departmentId);
+                                logger.info("for update value is userId:{}, roleId:{}, proxyUser:{}, departmentId:{}", userId, roleId, proxyUser, departmentId);
                                 addResult = this.systemManager.updateSystemUser(userId, password, roleId, proxyUser, departmentId);
                             }
                         } else {

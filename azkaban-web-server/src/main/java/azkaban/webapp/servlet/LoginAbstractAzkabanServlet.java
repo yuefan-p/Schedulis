@@ -543,7 +543,7 @@ public abstract class LoginAbstractAzkabanServlet extends AbstractAzkabanServlet
 
         if (hasParam(req, "encryption") && "true".equals(getParam(req, "encryption"))) {
             String wtss_private_key = props.getString("schedulis.private.key", "");
-            logger.debug("encryption is enable , decode password {}", password);
+            logger.debug("encryption is enable , decode password {}");
             try {
                 if (password != null) {
                     password = password.replaceAll(" ", "+");
