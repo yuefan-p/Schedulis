@@ -16,8 +16,6 @@
 
 package com.webank.wedatasphere.schedulis.system.service.impl;
 
-import static java.util.Objects.requireNonNull;
-
 import azkaban.executor.Executor;
 import azkaban.executor.ExecutorManagerException;
 import azkaban.executor.JdbcExecutorLoader;
@@ -28,22 +26,20 @@ import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.utils.MD5Utils;
 import com.webank.wedatasphere.schedulis.system.dao.SystemUserLoader;
-import com.webank.wedatasphere.schedulis.system.entity.User;
-import com.webank.wedatasphere.schedulis.system.entity.WebankDepartment;
-import com.webank.wedatasphere.schedulis.system.entity.WebankUser;
-import com.webank.wedatasphere.schedulis.system.entity.WtssPermissions;
-import com.webank.wedatasphere.schedulis.system.entity.WtssRole;
-import com.webank.wedatasphere.schedulis.system.entity.WtssUser;
+import com.webank.wedatasphere.schedulis.system.entity.*;
 import com.webank.wedatasphere.schedulis.system.exception.SystemUserManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 
 @Singleton
@@ -461,7 +457,7 @@ public class SystemManager {
         wtssUser.setUsername(username);
         wtssUser.setFullName(username);
         wtssUser.setEmail("");
-        wtssUser.setPassword("Abcd1234");
+        wtssUser.setPassword("");
       }
 
       if (null == existUser) {

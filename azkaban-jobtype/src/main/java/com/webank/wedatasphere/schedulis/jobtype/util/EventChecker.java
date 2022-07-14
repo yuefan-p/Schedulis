@@ -16,6 +16,8 @@
 
 package com.webank.wedatasphere.schedulis.jobtype.util;
 
+import azkaban.utils.Props;
+import com.webank.wedatasphere.schedulis.eventcheck.AbstractEventCheck;
 import com.webank.wedatasphere.schedulis.jobtype.connectors.druid.WBEventCheckerDao;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,11 +27,6 @@ import java.lang.management.ManagementFactory;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.webank.wedatasphere.schedulis.eventcheck.AbstractEventCheck;
-import azkaban.utils.Props;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EventChecker {
 	public final static String WAIT_TIME = "wait.time";
@@ -227,7 +224,7 @@ public class EventChecker {
 		p.put("msg.eventchecker.jdo.option.name","msg");
 		p.put("msg.eventchecker.jdo.option.url","jdbc:mysql://locahost:port/wtss_qyh_test?useUnicode=true&characterEncoding=UTF-8");
 		p.put("msg.eventchecker.jdo.option.username","username");
-		p.put("msg.eventchecker.jdo.option.password","password");
+		p.put("msg.eventchecker.jdo.option.password","");
 
 		EventChecker ec = new EventChecker("AA",p);
 		ec.run();
