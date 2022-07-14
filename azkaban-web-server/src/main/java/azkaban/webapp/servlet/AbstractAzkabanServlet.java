@@ -209,6 +209,7 @@ public abstract class AbstractAzkabanServlet extends HttpServlet {
                 final Cookie cookie = new Cookie(AZKABAN_FAILURE_MESSAGE, originStr);
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
+                cookie.setSecure(true);
                 response.addCookie(cookie);
             }
 

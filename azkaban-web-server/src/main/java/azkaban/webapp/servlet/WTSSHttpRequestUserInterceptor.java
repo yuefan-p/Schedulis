@@ -74,6 +74,7 @@ public class WTSSHttpRequestUserInterceptor implements HttpRequestUserIntercepto
         final Cookie cookie = new Cookie(LoginAbstractAzkabanServlet.SESSION_ID_NAME, session.getSessionId());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         HttpServletRequestWrapper httpServletRequestWrapper = new HttpServletRequestWrapper(req) {
 
             @Override

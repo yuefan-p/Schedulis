@@ -756,6 +756,7 @@ public abstract class LoginAbstractAzkabanServlet extends AbstractAzkabanServlet
             final Cookie cookie = new Cookie(SESSION_ID_NAME, session.getSessionId());
             cookie.setPath("/");
             cookie.setHttpOnly(true);
+            cookie.setSecure(true);
             resp.addCookie(cookie);
             logger.info("session.id {} ", session.getSessionId());
         } else {
