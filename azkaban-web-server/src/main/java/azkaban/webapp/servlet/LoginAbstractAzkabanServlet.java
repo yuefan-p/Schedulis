@@ -16,17 +16,11 @@
 
 package azkaban.webapp.servlet;
 
-import static azkaban.ServiceProvider.SERVICE_PROVIDER;
-
 import azkaban.project.Project;
 import azkaban.server.AzkabanServer;
 import azkaban.server.session.Session;
 import azkaban.server.session.SessionCache;
-import azkaban.user.Permission;
-import azkaban.user.Role;
-import azkaban.user.User;
-import azkaban.user.UserManager;
-import azkaban.user.UserManagerException;
+import azkaban.user.*;
 import azkaban.utils.Props;
 import azkaban.utils.StringUtils;
 import azkaban.utils.WebUtils;
@@ -39,27 +33,25 @@ import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.user.SystemUserManager;
 import com.webank.wedatasphere.schedulis.common.utils.RSAUtils;
 import com.webank.wedatasphere.schedulis.common.utils.XSSFilterUtils;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static azkaban.ServiceProvider.SERVICE_PROVIDER;
 
 /**
  * Abstract Servlet that handles auto login when the session hasn't been verified.
@@ -763,6 +755,7 @@ public abstract class LoginAbstractAzkabanServlet extends AbstractAzkabanServlet
             }
             final Cookie cookie = new Cookie(SESSION_ID_NAME, session.getSessionId());
             cookie.setPath("/");
+            cookie.setHttpOnly(true);
             resp.addCookie(cookie);
             logger.info("session.id {} ", session.getSessionId());
         } else {

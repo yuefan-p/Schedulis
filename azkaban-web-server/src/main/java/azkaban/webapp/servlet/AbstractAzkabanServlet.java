@@ -16,8 +16,6 @@
 
 package azkaban.webapp.servlet;
 
-import static azkaban.ServiceProvider.SERVICE_PROVIDER;
-
 import azkaban.Constants.ConfigurationKeys;
 import azkaban.server.AzkabanServer;
 import azkaban.server.HttpRequestUtils;
@@ -30,23 +28,22 @@ import azkaban.webapp.plugin.PluginRegistry;
 import azkaban.webapp.plugin.TriggerPlugin;
 import azkaban.webapp.plugin.ViewerPlugin;
 import com.webank.wedatasphere.schedulis.common.utils.XSSFilterUtils;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.*;
+
+import static azkaban.ServiceProvider.SERVICE_PROVIDER;
 
 /**
  * Base Servlet for pages
@@ -203,6 +200,7 @@ public abstract class AbstractAzkabanServlet extends HttpServlet {
                 final Cookie cookie = new Cookie(AZKABAN_FAILURE_MESSAGE, originStr);
                 cookie.setSecure(true);
                 cookie.setPath("/");
+                cookie.setHttpOnly(true);
                 response.addCookie(cookie);
             } else {
                 if (StringUtils.isNotEmpty(errorMsg)) {
@@ -210,6 +208,7 @@ public abstract class AbstractAzkabanServlet extends HttpServlet {
                 }
                 final Cookie cookie = new Cookie(AZKABAN_FAILURE_MESSAGE, originStr);
                 cookie.setPath("/");
+                cookie.setHttpOnly(true);
                 response.addCookie(cookie);
             }
 
@@ -235,6 +234,7 @@ public abstract class AbstractAzkabanServlet extends HttpServlet {
                 cookie.setSecure(true);
             }
             cookie.setPath("/");
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -258,6 +258,7 @@ public abstract class AbstractAzkabanServlet extends HttpServlet {
                 cookie.setSecure(true);
             }
             cookie.setPath("/");
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
