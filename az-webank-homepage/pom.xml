@@ -47,7 +47,13 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20070829</version>
+      <version>20180130</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.jayway.jsonpath</groupId>
+          <artifactId>json-path</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>

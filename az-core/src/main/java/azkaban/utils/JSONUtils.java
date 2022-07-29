@@ -16,25 +16,20 @@
 
 package azkaban.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 
 public class JSONUtils {
 
@@ -120,7 +115,7 @@ public class JSONUtils {
     final ObjectMapper mapper = new ObjectMapper();
     final JsonFactory factory = new JsonFactory();
     final JsonParser parser = factory.createJsonParser(file);
-    final JsonNode node = mapper.readTree(parser);
+    final com.fasterxml.jackson.databind.JsonNode node = mapper.readTree(String.valueOf(parser));
 
     return toObjectFromJSONNode(node);
   }
@@ -137,7 +132,7 @@ public class JSONUtils {
   private static Object toObjectFromJSONNode(final JsonNode node) {
     if (node.isObject()) {
       final HashMap<String, Object> obj = new HashMap<>();
-      final Iterator<String> iter = node.getFieldNames();
+      final Iterator<String> iter = node.fieldNames();
       while (iter.hasNext()) {
         final String fieldName = iter.next();
         final JsonNode subNode = node.get(fieldName);
@@ -148,7 +143,7 @@ public class JSONUtils {
       return obj;
     } else if (node.isArray()) {
       final ArrayList<Object> array = new ArrayList<>();
-      final Iterator<JsonNode> iter = node.getElements();
+      final Iterator<JsonNode> iter = node.elements();
       while (iter.hasNext()) {
         final JsonNode element = iter.next();
         final Object subObject = toObjectFromJSONNode(element);
@@ -165,7 +160,7 @@ public class JSONUtils {
       } else if (node.isDouble()) {
         return node.asDouble();
       } else {
-        System.err.println("ERROR What is this!? " + node.getNumberType());
+        System.err.println("ERROR What is this!? " + node.numberType());
         return null;
       }
     } else if (node.isBoolean()) {

@@ -23,27 +23,27 @@ import org.eclipse.jetty.server.ServerConnector;
 
 public class JmxJettyServer implements JmxJettyServerMBean {
 
-  private final Server server;
-  private final ServerConnector connector;
+    private final Server server;
+    private final ServerConnector connector;
 
-  public JmxJettyServer(final Server server) {
-    this.server = server;
-    if(( server.getConnectors()[0] instanceof ServerConnector)){
-      this.connector = (ServerConnector)server.getConnectors()[0];
-    }else {
-      this.connector = new ServerConnector(server);
+    public JmxJettyServer(final Server server) {
+        this.server = server;
+        if(( server.getConnectors()[0] instanceof ServerConnector)){
+            this.connector = (ServerConnector)server.getConnectors()[0];
+        }else {
+            this.connector = new ServerConnector(server);
+        }
     }
-  }
 
-  @Override
-  public boolean isRunning() {
-    return this.server.isRunning();
-  }
+    @Override
+    public boolean isRunning() {
+        return this.server.isRunning();
+    }
 
-  @Override
-  public boolean isFailed() {
-    return this.server.isFailed();
-  }
+    @Override
+    public boolean isFailed() {
+        return this.server.isFailed();
+    }
 
 //  @Override
 //  public boolean isStopped() {
@@ -60,15 +60,15 @@ public class JmxJettyServer implements JmxJettyServerMBean {
 //    return this.server.getThreadPool().getIdleThreads();
 //  }
 
-  @Override
-  public String getHost() {
-    return this.connector.getHost();
-  }
+    @Override
+    public String getHost() {
+        return this.connector.getHost();
+    }
 
-  @Override
-  public int getPort() {
-    return this.connector.getPort();
-  }
+    @Override
+    public int getPort() {
+        return this.connector.getPort();
+    }
 
 //  @Override
 //  public int getConfidentialPort() {

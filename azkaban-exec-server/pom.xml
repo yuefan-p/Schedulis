@@ -92,17 +92,23 @@
   <dependency>
     <groupId>org.eclipse.jetty</groupId>
     <artifactId>jetty-server</artifactId>
-    <version>${jetty.version}</version>
+    <version>9.4.41.v20210516</version>
   </dependency>
   <dependency>
     <groupId>org.eclipse.jetty</groupId>
     <artifactId>jetty-util</artifactId>
-    <version>${jetty.version}</version>
+    <version>9.4.41.v20210516</version>
   </dependency>
   <dependency>
     <groupId>org.eclipse.jetty</groupId>
     <artifactId>jetty-servlet</artifactId>
-    <version>${jetty.version}</version>
+    <version>9.4.41.v20210516</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
 
   <dependency>
@@ -114,6 +120,18 @@
     <groupId>net.sf.jopt-simple</groupId>
     <artifactId>jopt-simple</artifactId>
     <version>4.3</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.ant</groupId>
+    <artifactId>ant</artifactId>
+    <version>1.10.12</version>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>org.codehaus.jackson</groupId>
@@ -121,9 +139,9 @@
     <version>${jackson.version}</version>
   </dependency>
   <dependency>
-    <groupId>org.codehaus.jackson</groupId>
-    <artifactId>jackson-mapper-asl</artifactId>
-    <version>${jackson.version}</version>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>${fasterxml.jackson.version}</version>
   </dependency>
   <dependency>
     <groupId>commons-lang</groupId>
@@ -144,6 +162,12 @@
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-dbcp2</artifactId>
     <version>${commons.dbcp2.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>xstream</groupId>
+        <artifactId>xstream</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
   <dependency>
     <groupId>commons-dbutils</groupId>
@@ -245,6 +269,12 @@
     <groupId>org.yaml</groupId>
     <artifactId>snakeyaml</artifactId>
     <version>${snakeyaml.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
   <dependency>
     <groupId>javax.mail</groupId>
@@ -255,6 +285,12 @@
     <groupId>org.apache.velocity</groupId>
     <artifactId>velocity</artifactId>
     <version>${velocity.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
   <dependency>
     <groupId>org.slf4j</groupId>
@@ -299,6 +335,10 @@
       <exclusion>
         <artifactId>jetty-servlet</artifactId>
         <groupId>org.eclipse.jetty</groupId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
       </exclusion>
       <exclusion>
         <artifactId>ooxml-schemas</artifactId>

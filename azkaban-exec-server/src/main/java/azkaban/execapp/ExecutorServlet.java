@@ -16,37 +16,32 @@
 
 package azkaban.execapp;
 
-import static java.util.Objects.requireNonNull;
-
 import azkaban.Constants;
-import azkaban.executor.ConnectorParams;
-import azkaban.executor.ExecutableFlowBase;
-import azkaban.executor.Executor;
-import azkaban.executor.ExecutorLoader;
-import azkaban.executor.ExecutorManagerException;
+import azkaban.executor.*;
 import azkaban.server.HttpRequestUtils;
 import azkaban.utils.FileIOUtils.JobMetaData;
 import azkaban.utils.FileIOUtils.LogData;
 import azkaban.utils.JSONUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.webank.wedatasphere.schedulis.common.utils.GsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import azkaban.utils.Pair;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import com.webank.wedatasphere.schedulis.common.utils.GsonUtils;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+import static java.util.Objects.requireNonNull;
 
 
 public class ExecutorServlet extends HttpServlet implements ConnectorParams {
