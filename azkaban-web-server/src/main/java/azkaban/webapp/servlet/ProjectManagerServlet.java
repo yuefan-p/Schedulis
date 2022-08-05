@@ -17,25 +17,10 @@
 package azkaban.webapp.servlet;
 
 import azkaban.Constants.ConfigurationKeys;
-import azkaban.executor.ExecutableFlow;
-import azkaban.executor.ExecutableFlowBase;
-import azkaban.executor.ExecutableJobInfo;
-import azkaban.executor.ExecutableNode;
-import azkaban.executor.ExecutorManagerAdapter;
-import azkaban.executor.ExecutorManagerException;
-import azkaban.executor.Status;
-import azkaban.flow.Edge;
-import azkaban.flow.Flow;
-import azkaban.flow.FlowProps;
-import azkaban.flow.FlowUtils;
-import azkaban.flow.Node;
+import azkaban.executor.*;
+import azkaban.flow.*;
 import azkaban.flowtrigger.quartz.FlowTriggerScheduler;
-import azkaban.project.Project;
-import azkaban.project.ProjectFileHandler;
-import azkaban.project.ProjectLogEvent;
-import azkaban.project.ProjectManager;
-import azkaban.project.ProjectManagerException;
-import azkaban.project.ProjectWhitelist;
+import azkaban.project.*;
 import azkaban.project.validator.ValidationReport;
 import azkaban.project.validator.ValidatorConfigs;
 import azkaban.scheduler.Schedule;
@@ -47,11 +32,7 @@ import azkaban.user.Permission.Type;
 import azkaban.user.Role;
 import azkaban.user.User;
 import azkaban.user.UserUtils;
-import azkaban.utils.JSONUtils;
-import azkaban.utils.Pair;
-import azkaban.utils.Props;
-import azkaban.utils.PropsUtils;
-import azkaban.utils.Utils;
+import azkaban.utils.*;
 import azkaban.webapp.AzkabanWebServer;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.system.SystemManager;
@@ -59,41 +40,27 @@ import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerExceptio
 import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankDepartment;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.security.AccessControlException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.joda.time.LocalDateTime;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.security.AccessControlException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
 
@@ -106,7 +73,7 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
     private static final String LOCKDOWN_CREATE_PROJECTS_KEY = "lockdown.create.projects";
     private static final String LOCKDOWN_UPLOAD_PROJECTS_KEY = "lockdown.upload.projects";
     private static final String WTSS_PROJECT_PRIVILEGE_CHECK = "schedulis.project.privilege.check";
-    private static final String WTSS_DEP_UPLOAD_PRIVILEGE_CHECK = "wtss.department.upload.privilege.check";
+    private static final String WTSS_DEP_UPLOAD_PRIVILEGE_CHECK = "schedulis.department.upload.privilege.check";
     private static final String PROJECT_DOWNLOAD_BUFFER_SIZE_IN_BYTES = "project.download.buffer.size";
     private static final Comparator<Flow> FLOW_ID_COMPARATOR = new Comparator<Flow>() {
         @Override
