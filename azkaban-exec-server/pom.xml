@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.webank.wedatasphere.schedulis</groupId>
     <artifactId>schedulis</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
   </parent>
 
 
