@@ -35,6 +35,7 @@ import azkaban.project.ProjectFileHandler;
 import azkaban.project.ProjectLogEvent;
 import azkaban.project.ProjectManager;
 import azkaban.project.ProjectManagerException;
+import azkaban.project.ProjectVersion;
 import azkaban.project.ProjectWhitelist;
 import azkaban.project.validator.ValidationReport;
 import azkaban.project.validator.ValidatorConfigs;
@@ -262,7 +263,11 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
                 final String ajaxName = getParam(req, "ajax");
                 if (ajaxName.equals("getProjectId")) {
                     // Do nothing, since projectId is added to all AJAX requests.
-                } else if (ajaxName.equals("fetchProjectLogs")) {
+                } else if (ajaxName.equals("fetchProjectVersions")) {
+                    if (handleAjaxPermission(project, user, Type.READ, ret)) {
+                        ajaxFetchProjectVersions(project, req, ret);
+                    }
+                }else if (ajaxName.equals("fetchProjectLogs")) {
                     if (handleAjaxPermission(project, user, Type.READ, ret)) {
                         ajaxFetchProjectLogEvents(project, req, ret);
                     }
@@ -1121,6 +1126,34 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
 
         ret.put("error", "Permission denied. Need " + type.toString() + " access.");
         return false;
+    }
+
+    private void ajaxFetchProjectVersions(final Project project,final HttpServletRequest req,final HashMap<String, Object> ret) throws ServletException {
+        final int num = this.getIntParam(req, "size", 10);
+        final int skip = this.getIntParam(req, "skip", 0);
+        List<ProjectVersion> versionList = null;
+
+        try {
+            versionList = projectManager.getProjectVersions(project, num, skip);
+        } catch (ProjectManagerException e) {
+            throw new ServletException(e);
+        }
+
+        final String[] columns = new String[]{"projectId", "version", "uploadTime"};
+        ret.put("columns", columns);
+
+        final List<Object[]> resultList = new ArrayList<>();
+        for (final ProjectVersion data : versionList) {
+            final Object[] entry = new Object[3];
+            entry[0] = data.getProjectId();
+            entry[1] = data.getVersion();
+            entry[2] = data.getUploadTime();
+
+            resultList.add(entry);
+        }
+
+        ret.put("versionData", resultList);
+
     }
 
     private void ajaxFetchProjectLogEvents(final Project project,

@@ -396,6 +396,30 @@ class JdbcProjectHandlerSet {
     }
   }
 
+  public static class ProjectVersionsResultHandler implements ResultSetHandler<List<ProjectVersion>>{
+    public static String SELECT_PROJECT_VERSIONS =
+            "SELECT project_id, version, upload_time FROM project_versions WHERE project_id=? and num_chunks != 0 ORDER BY version DESC LIMIT ? OFFSET ?";
+
+    @Override
+    public List<ProjectVersion> handle(final ResultSet rs) throws SQLException {
+      if (!rs.next()) {
+        return Collections.emptyList();
+      }
+
+      final ArrayList<ProjectVersion> resultList = new ArrayList<>();
+      do {
+        final int projectId = rs.getInt(1);
+        final int version = rs.getInt(2);
+        final long uploadTime = rs.getLong(3);
+
+        final ProjectVersion result = new ProjectVersion(projectId, version, uploadTime);
+        resultList.add(result);
+      } while (rs.next());
+
+      return resultList;
+    }
+  }
+
   public static class ProjectAllPermissionsResultHandler implements ResultSetHandler<List<ProjectPermission>> {
 
     public static String SELECT_PROJECT_PERMISSION =

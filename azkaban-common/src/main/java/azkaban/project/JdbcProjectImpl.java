@@ -32,6 +32,7 @@ import azkaban.db.SQLTransaction;
 import azkaban.flow.Flow;
 import azkaban.project.JdbcProjectHandlerSet.FlowFileResultHandler;
 import azkaban.project.JdbcProjectHandlerSet.ProjectAllPermissionsResultHandler;
+import azkaban.project.JdbcProjectHandlerSet.ProjectVersionsResultHandler;
 import azkaban.project.ProjectLogEvent.EventType;
 import com.webank.wedatasphere.schedulis.common.project.entity.ProjectPermission;
 import azkaban.user.Permission;
@@ -1224,6 +1225,23 @@ public class JdbcProjectImpl implements ProjectLoader {
     } else {
       project.setUserPermission(name, perm);
     }
+  }
+
+  @Override
+  public List<ProjectVersion> getProjectVersions(Project project, int num, int skip) throws ProjectManagerException {
+    final ProjectVersionsResultHandler versionHandler = new JdbcProjectHandlerSet.ProjectVersionsResultHandler();
+    List<ProjectVersion> resultList = null;
+    try {
+      resultList = this.dbOperator
+              .query(JdbcProjectHandlerSet.ProjectVersionsResultHandler.SELECT_PROJECT_VERSIONS, versionHandler, project.getId(),
+                      num,
+                      skip);
+    } catch (final SQLException e) {
+      logger.error("Error getProjectVersions, project " + project.getName(), e);
+      throw new ProjectManagerException("Error getProjectVersions, project " + project.getName(), e);
+    }
+
+    return resultList;
   }
 
   @Override
