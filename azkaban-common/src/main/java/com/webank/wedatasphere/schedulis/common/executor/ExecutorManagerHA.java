@@ -529,14 +529,14 @@ public class ExecutorManagerHA extends EventHandler implements
     List<Integer> executionIds = new ArrayList<>();
     try {
       QueuedExecutions queuedFlows = loadQueuedFlows();
-      executionIds.addAll(getRunningFlowsHelper(projectId, flowId, queuedFlows.getAllEntries()));
+      executionIds.addAll(getRunningFlowsHelper(projectId, flowId, queuedFlows.getAllEntries(),false));
       executionIds.addAll(this.executorLoader.getRunningExecByLock(projectId, flowId));
       // it's possible an execution is runningCandidate, meaning it's in dispatching state neither in queuedFlows nor runningFlows,
       // so checks the runningCandidate as well.
       if (this.runningCandidate != null) {
-        executionIds.addAll(getRunningFlowsHelper(projectId, flowId, Lists.newArrayList(this.runningCandidate)));
+        executionIds.addAll(getRunningFlowsHelper(projectId, flowId, Lists.newArrayList(this.runningCandidate),false));
       }
-      executionIds.addAll(getRunningFlowsHelper(projectId, flowId, this.runningExecutions.get().values()));
+      executionIds.addAll(getRunningFlowsHelper(projectId, flowId, this.runningExecutions.get().values(),true));
       executionIds = executionIds.stream().distinct().collect(Collectors.toList());
       Collections.sort(executionIds);
     } catch (ExecutorManagerException e) {
@@ -547,12 +547,24 @@ public class ExecutorManagerHA extends EventHandler implements
 
   /* Helper method for getRunningFlows */
   private List<Integer> getRunningFlowsHelper(final int projectId, final String flowId,
-      final Collection<Pair<ExecutionReference, ExecutableFlow>> collection) {
+      final Collection<Pair<ExecutionReference, ExecutableFlow>> collection,final boolean isRunningExecution) {
     final List<Integer> executionIds = new ArrayList<>();
     for (final Pair<ExecutionReference, ExecutableFlow> ref : collection) {
       if (ref.getSecond().getFlowId().equals(flowId)
           && ref.getSecond().getProjectId() == projectId) {
-        executionIds.add(ref.getFirst().getExecId());
+        if (isRunningExecution) {
+          try {
+            ExecutableFlow runningFlow = this.executorLoader
+                    .fetchExecutableFlow(ref.getSecond().getExecutionId());
+            if (runningFlow != null && Status.isStatusRunning(runningFlow.getStatus())) {
+              executionIds.add(ref.getFirst().getExecId());
+            }
+          } catch (ExecutorManagerException e) {
+            executionIds.add(ref.getFirst().getExecId());
+          }
+        } else {
+          executionIds.add(ref.getFirst().getExecId());
+        }
       }
     }
     return executionIds;
