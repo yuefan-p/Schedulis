@@ -447,7 +447,7 @@ azkaban.ProjectView = Backbone.View.extend({
   handleDeleteProject: function (evt) {
 
     // 需要校验是否具有执行工作流权限 1:允许, 2:不允许
-    var requestURL = contextURL + "/manager?ajax=checkDeleteProjectFlagPermission&project=" + projectName;
+    var requestURL = "/manager?ajax=checkDeleteProjectFlagPermission&project=" + projectName;
     $.ajax({
       url: requestURL,
       type: "get",
@@ -460,7 +460,7 @@ azkaban.ProjectView = Backbone.View.extend({
           $("#delete-project-modal .modal-body p").html("<strong>" + wtssI18n.view.warning + " :</strong> " + wtssI18n.view.projectDeletePro);
           //判断是否有设置了定时调度
           //http://webip:port/manager?ajax=ajaxFetchProjectSchedules&project=child-flow-test2
-          var requestURL = contextURL + "/manager?ajax=ajaxFetchProjectSchedules&project=" + $("#delete-form [name='project']").val();
+          var requestURL = "/manager?ajax=ajaxFetchProjectSchedules&project=" + $("#delete-form [name='project']").val();
           $.ajax({
             url: requestURL,
             async: false,
