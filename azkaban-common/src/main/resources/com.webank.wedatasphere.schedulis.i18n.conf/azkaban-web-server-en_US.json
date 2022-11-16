@@ -49,7 +49,9 @@
     "confirm": "confirm",
     "pausedFlow": "Paused flow",
     "pausedFlowMsg": "If the flow is paused, the job in ready status will not be submitted for execution, and the job already running will continue to execute. Are you sure you want to pause?",
-    "pause": "Pause"
+    "pause": "Pause",
+    "superKillFlow": "Forced Kill",
+    "tipsSuperKill": "Risk: this forced operation will not abort the running task. Please confirm manually"
   },
   "azkaban.webapp.servlet.velocity.executionspage.vm": {
     "runningFlow": "Running Flow",
@@ -506,7 +508,14 @@
   "azkaban.webapp.servlet.velocity.projectnav.vm": {
     "flowList": "Flow List",
     "perList": "Permission List",
-    "proOperateRecord": "Project Action Record"
+    "proOperateRecord": "Project Action Record",
+    "flowVersionList": "Flow Version List"
+  },
+  "azkaban.webapp.servlet.velocity.projectversionpage.vm": {
+    "versionCol": "Version",
+    "uploadTimeCol": "Upload Time",
+    "operationCol": "Operation",
+    "downloadBtn": "download"
   },
   "azkaban.webapp.servlet.velocity.projectpage.vm": {
     "sch": "Schedule",

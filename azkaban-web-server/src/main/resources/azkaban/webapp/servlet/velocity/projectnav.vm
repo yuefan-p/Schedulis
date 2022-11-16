@@ -24,4 +24,7 @@
     <li#if($project_page == 'logs') class="active"#end><a id="project-logs-btn"
                                                           href="${context}/manager?project=${project.name}&logs">$proOperateRecord</a></li>
   #end
+ <li#if($project_page == 'versions') class="active"#end><a id="project-versions-btn"
+                                                                  href="${context}/manager?project=${project.name}&versions">$flowVersionList</a>
+ </li>
 </ul>
