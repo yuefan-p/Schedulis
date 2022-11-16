@@ -171,6 +171,9 @@
           </button>
         </li>
         <li class="nav-button pull-right">
+          <button type="button" id="superkillbtn" class="btn btn-danger btn-sm">$superKillFlow</button>
+        </li>
+        <li class="nav-button pull-right">
           <button type="button" id="exec-refresh-btn" class="btn btn-success btn-sm">$refresh
           </button>
         </li>
@@ -200,6 +203,26 @@
       </div>
     </div>
   </div>
+  ##强制结束工作流会话框
+    <div class="modal" id="superkill-flow-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 id="superkill-flow-title" class="modal-title">$superKillFlow</h4>
+          </div>
+          <div class="modal-body">
+            <p><strong>$tipsSuperKill</strong></p>
+          </div>
+          <div class="modal-footer">
+            <form>
+              <button type="button" class="btn btn-default" data-dismiss="modal">$cancel</button>
+              <button type="button" class="btn btn-danger" id="superkill-selected-flow-btn">$superKillFlow</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
   ## 暂停作业流提示框
   <div class="modal" id="paused-flow-modal">

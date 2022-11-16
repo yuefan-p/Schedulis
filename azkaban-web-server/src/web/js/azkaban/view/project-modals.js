@@ -410,7 +410,7 @@ azkaban.ProjectView = Backbone.View.extend({
   // 上传项目flow
   handleUploadProjectJob: function (evt) {
 
-    var requestURL1 = contextURL + "/manager?ajax=checkUserUploadPermission&project=" + projectName;
+    var requestURL1 = "/manager?ajax=checkUserUploadPermission&project=" + projectName;
     $.ajax({
       url: requestURL1,
       type: "get",
@@ -418,7 +418,7 @@ azkaban.ProjectView = Backbone.View.extend({
       dataType: "json",
       success: function (data) {
         if (data["userUploadFlag"] == 1) {
-          var requestURL2 = contextURL + "/manager?ajax=checkDepUploadPermission&project=" + projectName;
+          var requestURL2 = "/manager?ajax=checkDepUploadPermission&project=" + projectName;
           $.ajax({
             url: requestURL2,
             type: "get",

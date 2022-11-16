@@ -48,6 +48,8 @@
     "tipsSkipFailed": "跳过所有FAILED状态job, 请确认是否跳过!",
     "confirm": "确定",
     "pausedFlow": "暂停作业流",
+    "superKillFlow": "强制结束",
+    "tipsSuperKill": "风险：该强制操作不会中止正在跑的后台任务，请手动确认",
     "pausedFlowMsg": "如果作业流暂停执行，READY状态的任务将不会被提交执行，已经运行的任务会继续执行，确定要暂停？",
     "pause": "暂停"
   },
@@ -506,7 +508,14 @@
   "azkaban.webapp.servlet.velocity.projectnav.vm": {
     "flowList": "工作流列表",
     "perList": "权限列表",
-    "proOperateRecord": "项目操作纪录"
+    "proOperateRecord": "项目操作纪录",
+    "flowVersionList": "项目版本"
+  },
+  "azkaban.webapp.servlet.velocity.projectversionpage.vm": {
+    "versionCol": "版本号",
+    "uploadTimeCol": "发布时间",
+    "operationCol": "操作",
+    "downloadBtn": "下载"
   },
   "azkaban.webapp.servlet.velocity.projectpage.vm": {
     "sch": "定时调度",
