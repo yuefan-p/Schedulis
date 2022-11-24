@@ -1300,7 +1300,13 @@ public class FlowRunner extends EventHandler implements Runnable {
     if (FlowLoaderUtils.isAzkabanFlowVersion20(this.flow.getAzkabanFlowVersion())) {
       final String jobPath =
               node.getParentFlow().getFlowId() + Constants.PATH_DELIMITER + node.getId();
-      props = loadPropsFromYamlFile(jobPath);
+      int retrylimit = 0;
+      while(retrylimit < 3){
+        props = loadPropsFromYamlFile(jobPath);
+        retrylimit++;
+        this.logger.info("Job path loaded from yaml file " + jobPath);
+        if(props != null) break;
+      }
       if (props == null) {
         this.logger.info("Job props loaded from yaml file is empty for job " + node.getId());
         return props;
