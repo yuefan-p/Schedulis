@@ -24,6 +24,7 @@ public class StringUtils {
 
   public static final char SINGLE_QUOTE = '\'';
   public static final char DOUBLE_QUOTE = '\"';
+  private static final Pattern NUMBER_PATTERN = Pattern.compile("^[1-9]+[0-9]*");
   private static final Pattern BROWSWER_PATTERN = Pattern
       .compile(".*Gecko.*|.*AppleWebKit.*|.*Trident.*|.*Chrome.*");
 
@@ -65,6 +66,13 @@ public class StringUtils {
     }
 
     return buffer.toString();
+  }
+
+  public static boolean isNumeric(String str){
+    if(str == null){
+      return false;
+    }
+    return NUMBER_PATTERN.matcher(str).matches();
   }
 
   /**

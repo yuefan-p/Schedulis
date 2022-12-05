@@ -527,7 +527,12 @@ public class ExecutionController extends EventHandler implements ExecutorManager
 
   @Override
   public void superKillFlow(ExecutableFlow exFlow, String userId) throws ExecutorManagerException {
-
+    Executor executor = executorLoader.fetchExecutorByExecutionId(exFlow.getExecutionId());
+    if (executor == null) {
+      throw new ExecutorManagerException("Find Executor Error!");
+    }
+    this.apiGateway.callWithExecutionId(executor.getHost(), executor.getPort(),
+            ConnectorParams.SUPER_KILL_ACTION, exFlow.getExecutionId(), userId);
   }
 
   @Override

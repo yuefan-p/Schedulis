@@ -35,6 +35,7 @@ import azkaban.project.ProjectFileHandler;
 import azkaban.project.ProjectLogEvent;
 import azkaban.project.ProjectManager;
 import azkaban.project.ProjectManagerException;
+import azkaban.project.ProjectVersion;
 import azkaban.project.ProjectWhitelist;
 import azkaban.project.validator.ValidationReport;
 import azkaban.project.validator.ValidatorConfigs;
@@ -175,6 +176,8 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
                 handleProjectLogsPage(req, resp, session);
             } else if (hasParam(req, "permissions")) {
                 handlePermissionPage(req, resp, session);
+            } else if (hasParam(req, "versions")) {
+                handleProjectVersionsPage(req, resp, session);
             } else if (hasParam(req, "prop")) {
                 handlePropertyPage(req, resp, session);
             } else if (hasParam(req, "history")) {
@@ -208,6 +211,121 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
             newPage(req, resp, session,
                 "azkaban/webapp/servlet/velocity/projectpage.vm");
         page.add("errorMsg", "No project set.");
+        page.render();
+    }
+
+    private void handleProjectVersionsPage(final HttpServletRequest req, final HttpServletResponse resp,
+                                           final Session session) throws ServletException, IOException {
+
+        final Page page = newPage(req, resp, session,"azkaban/webapp/servlet/velocity/projectversionpage.vm");
+
+        Map<String, String> projectVersionPageMap;
+        Map<String, String> subPageMap1;
+        Map<String, String> subPageMap2;
+        Map<String, String> subPageMap3;
+        Map<String, String> subPageMap4;
+        Map<String, String> subPageMap5;
+
+        String languageType = LoadJsonUtils.getLanguageType();
+        if ("zh_CN".equalsIgnoreCase(languageType)) {
+
+            // 添加国际化标签
+            projectVersionPageMap = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.projectversionpage.vm");
+            subPageMap1 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.nav.vm");
+            subPageMap2 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.projectpageheader.vm");
+            subPageMap3 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.projectnav.vm");
+            subPageMap4 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.projectsidebar.vm");
+            subPageMap5 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-zh_CN.json",
+                    "azkaban.webapp.servlet.velocity.projectmodals.vm");
+        } else {
+            // 添加国际化标签
+            projectVersionPageMap = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.projectversionpage.vm");
+            subPageMap1 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.nav.vm");
+            subPageMap2 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.projectpageheader.vm");
+            subPageMap3 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.projectnav.vm");
+            subPageMap4 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.projectsidebar.vm");
+            subPageMap5 = LoadJsonUtils.transJson("/com.webank.wedatasphere.schedulis.i18n.conf/azkaban-web-server-en_US.json",
+                    "azkaban.webapp.servlet.velocity.projectmodals.vm");
+        }
+
+        projectVersionPageMap.forEach(page::add);
+        subPageMap1.forEach(page::add);
+        subPageMap2.forEach(page::add);
+        subPageMap3.forEach(page::add);
+        subPageMap4.forEach(page::add);
+        subPageMap5.forEach(page::add);
+        page.add("currentlangType", languageType);
+
+        final String projectName = getParam(req, "project");
+
+        final User user = session.getUser();
+        PageUtils.hideUploadButtonWhenNeeded(page, session, this.lockdownUploadProjects);
+        Project project = null;
+        try {
+            project = this.projectManager.getProject(projectName);
+            if (project == null) {
+                page.add("errorMsg", "项目 " + projectName + " 不存在.");
+            } else {
+                if (!hasPermission(project, user, Type.READ)) {
+                    throw new AccessControlException("没有权限查看这个项目 " + projectName + ".");
+                }
+
+                page.add("project", project);
+                page.add("admins", Utils.flattenToString(project.getUsersWithPermission(Type.ADMIN), ","));
+                final Permission perm = this.getPermissionObject(project, user, Type.ADMIN);
+                page.add("userpermission", perm);
+
+                final boolean adminPerm = perm.isPermissionSet(Type.ADMIN);
+                if (adminPerm) {
+                    page.add("admin", true);
+                }
+                // Set this so we can display execute buttons only to those who have
+                // access.
+                if (perm.isPermissionSet(Type.EXECUTE) || adminPerm) {
+                    page.add("exec", true);
+                } else {
+                    page.add("exec", false);
+                }
+
+                if (user.getRoles().contains("admin")) {
+                    page.add("isSystemAdmin", true);
+                }
+
+                if (hasPermission(project, user, Type.ADMIN)) {
+                    page.add("isProjectAdmin", true);
+                }
+
+                int uploadFlag;
+                // 先判断开关是否打开,如果开关打开,则校验部门上传权限,如果关闭,则不需要校验
+                // 判断是否具有上传权限  uploadFlag 1:允许, 2:不允许,其他值:不允许
+                if (wtss_dep_upload_privilege_check) {
+                    uploadFlag = checkDepartmentUploadFlag(user);
+                } else {
+                    uploadFlag = 1;
+                }
+
+                // 需要首先验证部门上传权限是否被允许, 再判断是否满足原有上传许可的逻辑
+                if ((uploadFlag == 1) && (perm.isPermissionSet(Type.WRITE) || adminPerm)) {
+                    page.add("isWritePerm", true);
+                }
+
+            }
+        } catch (final AccessControlException e) {
+            page.add("errorMsg", e.getMessage());
+        } catch (SystemUserManagerException e) {
+            logger.error("部门上传权限标识查询异常.");
+        }
+
         page.render();
     }
 
@@ -262,7 +380,11 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
                 final String ajaxName = getParam(req, "ajax");
                 if (ajaxName.equals("getProjectId")) {
                     // Do nothing, since projectId is added to all AJAX requests.
-                } else if (ajaxName.equals("fetchProjectLogs")) {
+                } else if (ajaxName.equals("fetchProjectVersions")) {
+                    if (handleAjaxPermission(project, user, Type.READ, ret)) {
+                        ajaxFetchProjectVersions(project, req, ret);
+                    }
+                }else if (ajaxName.equals("fetchProjectLogs")) {
                     if (handleAjaxPermission(project, user, Type.READ, ret)) {
                         ajaxFetchProjectLogEvents(project, req, ret);
                     }
@@ -1121,6 +1243,34 @@ public class ProjectManagerServlet extends LoginAbstractAzkabanServlet {
 
         ret.put("error", "Permission denied. Need " + type.toString() + " access.");
         return false;
+    }
+
+    private void ajaxFetchProjectVersions(final Project project,final HttpServletRequest req,final HashMap<String, Object> ret) throws ServletException {
+        final int num = this.getIntParam(req, "size", 10);
+        final int skip = this.getIntParam(req, "skip", 0);
+        List<ProjectVersion> versionList = null;
+
+        try {
+            versionList = projectManager.getProjectVersions(project, num, skip);
+        } catch (ProjectManagerException e) {
+            throw new ServletException(e);
+        }
+
+        final String[] columns = new String[]{"projectId", "version", "uploadTime"};
+        ret.put("columns", columns);
+
+        final List<Object[]> resultList = new ArrayList<>();
+        for (final ProjectVersion data : versionList) {
+            final Object[] entry = new Object[3];
+            entry[0] = data.getProjectId();
+            entry[1] = data.getVersion();
+            entry[2] = data.getUploadTime();
+
+            resultList.add(entry);
+        }
+
+        ret.put("versionData", resultList);
+
     }
 
     private void ajaxFetchProjectLogEvents(final Project project,

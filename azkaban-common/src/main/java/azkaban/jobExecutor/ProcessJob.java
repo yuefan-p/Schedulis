@@ -19,6 +19,7 @@ package azkaban.jobExecutor;
 import static azkaban.Constants.ConfigurationKeys.AZKABAN_SERVER_GROUP_NAME;
 import static azkaban.Constants.ConfigurationKeys.AZKABAN_SERVER_NATIVE_LIB_FOLDER;
 import static azkaban.ServiceProvider.SERVICE_PROVIDER;
+import static azkaban.utils.StringUtils.isNumeric;
 
 import azkaban.Constants;
 import azkaban.Constants.JobProperties;
@@ -49,6 +50,7 @@ import org.slf4j.Logger;
 public class ProcessJob extends AbstractProcessJob {
 
   public static final String COMMAND = "command";
+  public static final String COMMAND_PREFIX = "command.";
   public static final String AZKABAN_MEMORY_CHECK = "azkaban.memory.check";
   // Use azkaban.Constants.ConfigurationKeys.AZKABAN_SERVER_NATIVE_LIB_FOLDER instead
   @Deprecated
@@ -434,11 +436,19 @@ public class ProcessJob extends AbstractProcessJob {
 
   protected List<String> getCommandList() {
     final List<String> commands = new ArrayList<>();
-    commands.add(this.jobProps.getString(COMMAND));
-    for (int i = 1; this.jobProps.containsKey(COMMAND + "." + i); i++) {
-      commands.add(this.jobProps.getString(COMMAND + "." + i));
+    if(this.jobProps.containsKey(COMMAND)) {
+      commands.add(this.jobProps.getString(COMMAND));
     }
-
+    Map<String, String> cmds = this.jobProps.getMapByPrefix(COMMAND_PREFIX);
+    cmds.entrySet().stream()
+            .filter(k -> isNumeric(k.getKey()))
+            .map(m -> Integer.valueOf(m.getKey()))
+            .sorted().forEach(x -> {
+              String key = String.valueOf(x);
+              if (cmds.containsKey(key)) {
+                commands.add(cmds.get(key));
+              }
+            });
     return commands;
   }
 

@@ -111,6 +111,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.joda.time.LocalDate;
@@ -215,6 +216,8 @@ public class ExecutorServlet extends LoginAbstractAzkabanServlet {
                     ajaxCancelFlow(req, resp, ret, session.getUser(), exFlow);
                 } else if (ajaxName.equals("pauseFlow")) {
                     ajaxPauseFlow(req, resp, ret, session.getUser(), exFlow);
+                } else if (ajaxName.equals("superKillFlow")) {
+                    ajaxSuperKillFlow(req, resp, ret, session.getUser(), exFlow);
                 } else if (ajaxName.equals("resumeFlow")) {
                     ajaxResumeFlow(req, resp, ret, session.getUser(), exFlow);
 					      // FIXME Added interface to set job stream to failed state.
@@ -363,6 +366,19 @@ public class ExecutorServlet extends LoginAbstractAzkabanServlet {
         }
         if (ret != null) {
             this.writeJSON(resp, ret);
+        }
+    }
+
+    private void ajaxSuperKillFlow(HttpServletRequest req, HttpServletResponse resp, HashMap<String, Object> ret, User user, ExecutableFlow exFlow) {
+        final Project project = getProjectAjaxByPermission(ret, exFlow.getProjectId(), user, Type.EXECUTE);
+        if (project == null) {
+            return;
+        }
+
+        try {
+            this.executorManagerAdapter.superKillFlow(exFlow, user.getUserId());
+        } catch (final ExecutorManagerException e) {
+            ret.put("error", e.getMessage());
         }
     }
 

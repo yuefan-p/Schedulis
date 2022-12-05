@@ -1192,4 +1192,8 @@ public class ProjectManager {
     this.projectsByName.remove(this.projectsById.get(projectId).getName());
     this.projectsById.remove(projectId);
   }
+
+  public List<ProjectVersion> getProjectVersions(final Project project,final int num,final int skip) throws ProjectManagerException {
+    return this.projectLoader.getProjectVersions(project, num, skip);
+  }
 }
