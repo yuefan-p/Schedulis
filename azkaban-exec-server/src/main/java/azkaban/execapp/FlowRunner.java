@@ -579,6 +579,7 @@ public class FlowRunner extends EventHandler implements Runnable {
 
     while (!this.flowFinished) {
       synchronized (this.mainSyncObj) {
+        Thread.interrupted();
         if (this.flowPaused) {
           try {
             this.mainSyncObj.wait(CHECK_WAIT_MS);
