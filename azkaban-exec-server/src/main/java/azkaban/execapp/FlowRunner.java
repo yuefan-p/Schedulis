@@ -93,6 +93,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -1088,38 +1089,44 @@ public class FlowRunner extends EventHandler implements Runnable {
     boolean succeeded = true;
     Props previousOutput = null;
     //最后一个节点成功就能确保作业流成功？
-    for (final String end : flow.getEndNodes()) {
-      final ExecutableNode node = flow.getExecutableNode(end);
-      if (node.getStatus() == Status.KILLED
-              || node.getStatus() == Status.KILLING
-              || node.getStatus() == Status.FAILED
-              || node.getStatus() == Status.CANCELLED) {
-        succeeded = false;
+      for (final ExecutableNode node : flow.getExecutableNodes()) {
+          if (Status.isStatusFailed(node.getStatus()) || Status.KILLING.equals(node.getStatus())) {
+              // FIXME Solve the problem that the last node of the sub-job stream fails to be set, and the sub-job stream is still failed.
+              List<String> skipFaultJobList = (ArrayList) this.flow.getOtherOption()
+                      .get("jobSkipFailedOptions");
+              if (this.flow.getFailedSkipedAllJobs() || (null != skipFaultJobList && (
+                      skipFaultJobList.contains(node.getNestedId()) || skipFaultJobList
+                              .contains(node.getId())))
+                      || (validJobInSkipFLow(node, skipFaultJobList))) {
+                  logger.info("用户已设置错误跳过策略，跳过错误状态 Job:" + node.getNestedId() + " 继续执行。");
+              } else {
+                  succeeded = false;
+                  break;
+              }
+
+          }
       }
-      // FIXME Solve the problem that the last node of the sub-job stream fails to be set, and the sub-job stream is still failed.
-      List<String> skipFaultJobList = (ArrayList)this.flow.getOtherOption().get("jobSkipFailedOptions");
-      if (null != skipFaultJobList && (skipFaultJobList.contains(node.getNestedId()) || skipFaultJobList.contains(node.getId()))) {
-        logger.info("用户已设置错误跳过策略，跳过错误状态 Job:" + node.getNestedId() + " 继续执行。");
-        succeeded = true;
+
+      for (final String end : flow.getEndNodes()) {
+          final ExecutableNode node = flow.getExecutableNode(end);
+          Props output = node.getOutputProps();
+          if (output != null) {
+              output = Props.clone(output);
+              output.setParent(previousOutput);
+              previousOutput = output;
+          }
       }
-      Props output = node.getOutputProps();
-      if (output != null) {
-        output = Props.clone(output);
-        output.setParent(previousOutput);
-        previousOutput = output;
-      }
-    }
     //保证每个节点都是成功作业流才是成功
     // FIXME The flow 1.0 scenario needs to ensure that each task in the job stream is successful before the job stream is executed successfully.
-    if(!FlowLoaderUtils.isAzkabanFlowVersion20(this.flow.getAzkabanFlowVersion())) {
-      for (ExecutableNode executableNode : flow.getExecutableNodes()) {
-        if (Status.isStatusFailed(executableNode.getStatus()) || executableNode.getStatus().equals(Status.KILLING)) {
-          logger.warn("job: " + executableNode.getNestedId() + " is not succeesed.");
-          succeeded = false;
-          break;
-        }
-      }
-    }
+//    if(!FlowLoaderUtils.isAzkabanFlowVersion20(this.flow.getAzkabanFlowVersion())) {
+//      for (ExecutableNode executableNode : flow.getExecutableNodes()) {
+//        if (Status.isStatusFailed(executableNode.getStatus()) || executableNode.getStatus().equals(Status.KILLING)) {
+//          logger.warn("job: " + executableNode.getNestedId() + " is not succeesed.");
+//          succeeded = false;
+//          break;
+//        }
+//      }
+//    }
 
     flow.setOutputProps(previousOutput);
     if (!succeeded && (flow.getStatus() == Status.RUNNING)) {
@@ -1159,6 +1166,18 @@ public class FlowRunner extends EventHandler implements Runnable {
       this.flowFinished = true;
     }
   }
+    private boolean validJobInSkipFLow(ExecutableNode node, List<String> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return false;
+        }
+        if (list.contains("subflow:" + node.getParentFlow().getFlowId())) {
+            return true;
+        }
+        if (node.getParentFlow().getParentFlow() != null) {
+            return validJobInSkipFLow(node.getParentFlow(), list);
+        }
+        return false;
+    }
 
   /**
    *  解析job文件，获取里面的配置   .job > output变量 > 父作业流配置(包含azkaban内置变量，执行参数) > properties > userProperties
