@@ -1089,15 +1089,15 @@ public class FlowRunner extends EventHandler implements Runnable {
     boolean succeeded = true;
     Props previousOutput = null;
     //最后一个节点成功就能确保作业流成功？
+    List<String> skipFaultJobList = (ArrayList) this.flow.getOtherOption()
+            .get("jobSkipFailedOptions");
       for (final ExecutableNode node : flow.getExecutableNodes()) {
           if (Status.isStatusFailed(node.getStatus()) || Status.KILLING.equals(node.getStatus())) {
               // FIXME Solve the problem that the last node of the sub-job stream fails to be set, and the sub-job stream is still failed.
-              List<String> skipFaultJobList = (ArrayList) this.flow.getOtherOption()
-                      .get("jobSkipFailedOptions");
-              if (this.flow.getFailedSkipedAllJobs() || (null != skipFaultJobList && (
-                      skipFaultJobList.contains(node.getNestedId()) || skipFaultJobList
-                              .contains(node.getId())))
-                      || (validJobInSkipFLow(node, skipFaultJobList))) {
+            if (Status.FAILED.equals(node.getStatus()) && (this.flow.getFailedSkipedAllJobs() || (
+                    null != skipFaultJobList && (skipFaultJobList.contains(node.getNestedId())
+                            || skipFaultJobList.contains(node.getId()))) || (validJobInSkipFLow(node,
+                    skipFaultJobList)))) {
                   logger.info("用户已设置错误跳过策略，跳过错误状态 Job:" + node.getNestedId() + " 继续执行。");
               } else {
                   succeeded = false;
