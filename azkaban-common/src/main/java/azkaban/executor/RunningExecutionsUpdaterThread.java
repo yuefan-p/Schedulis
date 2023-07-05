@@ -65,7 +65,7 @@ public class RunningExecutionsUpdaterThread extends Thread {
   }
 
   private void waitForNewExecutions() {
-    synchronized (this.runningExecutions) {
+    synchronized (this.runningExecutions.get()) {
       try {
         final int waitTimeMillis =
             this.runningExecutions.get().size() > 0 ? this.waitTimeMs : this.waitTimeIdleMs;
@@ -73,7 +73,7 @@ public class RunningExecutionsUpdaterThread extends Thread {
           this.updater.getAlerterHolder().getFlowAlerterFlag().clear();
         }
         if (waitTimeMillis > 0) {
-          this.runningExecutions.wait(waitTimeMillis);
+          this.runningExecutions.get().wait(waitTimeMillis);
         }
       } catch (final InterruptedException e) {
         logger.error("InterruptedException in wait for new executions", e);
