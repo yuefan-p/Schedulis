@@ -105,6 +105,9 @@ public class RunningExecutionsUpdater {
         final List<Map<String, Object>> executionUpdates =
             (List<Map<String, Object>>) results
                 .get(ConnectorParams.RESPONSE_UPDATED_FLOWS);
+        logger.info("==============================");
+        logger.info("executionUpdates 列表:{}", executionUpdates);
+        logger.info("==============================");
         for (final Map<String, Object> updateMap : executionUpdates) {
           try {
             final ExecutableFlow flow = updateExecution(updateMap);
@@ -248,6 +251,10 @@ public class RunningExecutionsUpdater {
     final Status oldStatus = flow.getStatus();
     flow.applyUpdateObject(updateData);
     final Status newStatus = flow.getStatus();
+
+    logger.info("==============================");
+    logger.info("oldStatus={}, newStatus={}", oldStatus, newStatus);
+    logger.info("==============================");
 
     if (oldStatus != newStatus && newStatus == Status.FAILED) {
       this.commonMetrics.markFlowFail();
