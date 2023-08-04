@@ -86,10 +86,11 @@ mysql> source 脚本存放目录/hdp_schedulis_deploy_script.sql
 ```
 
 ### 三）、修改配置<a name="配置">
-部署时，建议将配置文件放置统一位置（如：`/appcom/config/schedulis-config/`）进行管理，并将项目 `bin/config` 目录下的目录全部复制到新建的`schedulis-config`目录,
+部署时，建议将配置文件放置统一位置（如：`/appcom/config/schedulis-config/`）进行管理，并将项目 `bin/config` 目录下的目录全部复制到新建的`schedulis-config`目录（如果此时没有源码，可以通过网盘下载链接：https://share.weiyun.com/Rt0cDWO3 密码：i8k7yw）,
 再通过软链的方式链接至服务下的 `conf` 
 目录下的各个配置文件，方便后续的升级以及重新部署。 
 例如：
+
 ```shell
 # Executor 服务配置软链
 ln -sf /appcom/Install/AzkabanInstall/schedulis_{{version}}_exec /appcom/Install/AzkabanInstall/schedulis-exec;
@@ -104,6 +105,19 @@ ln -sf /appcom/config/schedulis-config/schedulis-web/web_azkaban.properties /app
 ln -sf /appcom/config/schedulis-config/schedulis-web/web_plugin_ims.properties /appcom/Install/AzkabanInstall/schedulis-web/plugins/alerter/WebankIMS/conf/plugin.properties;
 ln -sf /appcom/config/schedulis-config/schedulis-web/web_plugin_system.properties /appcom/Install/AzkabanInstall/schedulis-web/plugins/viewer/system/conf/plugin.properties;
 ```
+
+
+
+为了hive、spark任务能正常执行，需要Executor所在机器安装好Hadoop、Hive、Spark，并将Hadoop、Hive、Spark的安装路径配置软链
+
+```shell
+# 配置软链
+ln -sf {{HADOOP_HOME}} /appcom/Install/hadoop;
+ln -sf {{HIVE_HOME}} /appcom/Install/hive;
+ln -sf {{SPARK_HOME}} /appcom/Install/spark;
+```
+
+
 
 #### 1. 修改 host.properties 文件
 
@@ -227,10 +241,12 @@ alarm.toEcc=0
 
 ##### plugins/jobtypes/linkis/plugin.properties
 
-若用户安装了 Linkis（[Linkis 插件安装](#Linkis 安装)），则修改此配置文件来对接 Linkis，该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下
+若用户安装了 Linkis（[Linkis 插件安装](#Linkis 安装)），则修改此配置文件来对接 Linkis，该配置文件存放在 ExecServer 安装包下的 plugins/jobtypes/linkis 目录下，并配置gateway地址和token
 ```
 #将该值修改为 Linkis 的gateway地址
 wds.linkis.gateway.url=
+#此处的token需要和Linkis管理台中已配置的token保持一致
+wds.linkis.client.flow.author.user.token=
 ```
 
 ##### plugins/jobtypes/linkis/private.properties
@@ -541,45 +557,49 @@ pwd : Abcd1234
 
 ## 十、QA 环节
 1. 如何查看自己本机 Hostname ?   
-命令行输入  ```hostname```
+  命令行输入  ```hostname```
 
 2. 为什么先启动了 Webserver 再启动 Executorserver，没有报错，但在浏览器连接时却提示无法连接？       
-可以使用 jps 命令确认 Webserver 进程是否启动了。一般情况下，建议先启动 ExecutorServer，再 WebServer。否则有可能 WebServer 先启动又被关掉。
+  可以使用 jps 命令确认 Webserver 进程是否启动了。一般情况下，建议先启动 ExecutorServer，再 WebServer。否则有可能 WebServer 先启动又被关掉。
 
 3. 两个服务关于 MySQL 的配置中密码已经使用了 base64 加密，日志中还是无法提示连接 MySQL?    
-请注意区分 Linux 下的 base64 加密与 Java base64 加密，我们使用的是后者。
+  请注意区分 Linux 下的 base64 加密与 Java base64 加密，我们使用的是后者。
 
 4. 两个服务使用相应的 shutdown 脚本总是提示找不到相应的 Pid?    
-若要关闭两个服务的话，请手动 Kill 掉相应的进程，并删除相应的 currentpid 文件。
+  若要关闭两个服务的话，请手动 Kill 掉相应的进程，并删除相应的 currentpid 文件。
 
 5. 怎么重启服务？    
-请参考4，将服务关闭再将服务开启。
+  请参考4，将服务关闭再将服务开启。
 
 6. 为什么 ExecutorServer 显示 Connection Failed，而修改配置后再启动，却提示 Already Started?    
-此处请先将相应的 currentpid 文件删除，再重新启动。
+  此处请先将相应的 currentpid 文件删除，再重新启动。
 
 7. 为什么报错了，相应的日志文件没有更新？    
-请先确认配置的日志文件路径是否正确，再将日志文件属主修改为 hadoop 用户，并赋予 775 权限。
+  请先确认配置的日志文件路径是否正确，再将日志文件属主修改为 hadoop 用户，并赋予 775 权限。
 
 8. 上传项目文件后，系统报错？    
-请确认 WebServer 安装包路径的 lib 目录下是否存在 common-lang3.jar，若没有请手动添加。
+  请确认 WebServer 安装包路径的 lib 目录下是否存在 common-lang3.jar，若没有请手动添加。
 
 9. 为什么报错了，却找不到相应的日志文件？    
-请确认已经正确配置日志文件路径。详情请参考参数配置中的修改日志存放路径。
+  请确认已经正确配置日志文件路径。详情请参考参数配置中的修改日志存放路径。
 
 10. 为什么在 Maven 编译的时候会出现 systemPath 不是绝对路径？     
-首先确认是否已经设置了 MAVEN_HOME 的环境变量，并且确认是否已经刷新环境变量文件           
-若是上面步骤都已完成，可以在编译的时候传入参数      
-```mvn install -Denv.MAVEN_HOME=dir of local repository set in settings.xml```
+    首先确认是否已经设置了 MAVEN_HOME 的环境变量，并且确认是否已经刷新环境变量文件           
+    若是上面步骤都已完成，可以在编译的时候传入参数      
+    ```mvn install -Denv.MAVEN_HOME=dir of local repository set in settings.xml```
 
 11. 编译时出现错误 “Could not find artifactor xxx”?     
-请确保 Maven下 conf/settigs.xml 或者用户的 settings.xml 是否有正确配置镜像地址和远程仓库地址
+    请确保 Maven下 conf/settigs.xml 或者用户的 settings.xml 是否有正确配置镜像地址和远程仓库地址
 
 12. 项目文件路径和安装包路径有什么区别？    
-项目文件路径是 Git 下载下来后项目文件存放的地址；安装包路径是使用 Maven 编译后将安装包解压后存放的地址；数据库初始化脚本存于项目文件路径下；其他的参数配置文件都在安装包路径下
+    项目文件路径是 Git 下载下来后项目文件存放的地址；安装包路径是使用 Maven 编译后将安装包解压后存放的地址；数据库初始化脚本存于项目文件路径下；其他的参数配置文件都在安装包路径下
 
 13. 为什么使用 Executor 启动脚本启动 Executor 时，先是提示启动成功，后面又一直出现更新数据库失败的提示？    
-请耐心等待，直到确认已经全部失败后，再查看日志确认具体报错原因。
+    请耐心等待，直到确认已经全部失败后，再查看日志确认具体报错原因。
 
 14. 为什么在启动 Executor 的时候，先是提示启动成功，后面就一直卡在更新数据库失败的提示很久，失败次数也没有更新？    
-对于这种情况，很大原因是数据库连接时出现了问题，请停止启动进程，并查看日志确认错误原因。按需查看 QA 章节。
+    对于这种情况，很大原因是数据库连接时出现了问题，请停止启动进程，并查看日志确认错误原因。按需查看 QA 章节。
+
+15. schedulis点击用户参数和系统管理tab页为什么无法跳转？
+
+    该问题的原因是schedulis中没有hadoop用户，在schedulis中创建hadoop用户即可。
