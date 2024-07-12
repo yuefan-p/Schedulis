@@ -26,7 +26,7 @@ import azkaban.project.ProjectManager;
 import azkaban.sla.SlaOption;
 import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import azkaban.trigger.TriggerAction;
 import azkaban.trigger.TriggerManager;
 

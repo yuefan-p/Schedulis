@@ -16,8 +16,12 @@
 
 package azkaban.executor;
 
+import static com.webank.wedatasphere.schedulis.common.executor.ExecutorManagerHA.FileWrite;
+import static java.util.Objects.requireNonNull;
+
 import azkaban.Constants;
 import azkaban.Constants.ConfigurationKeys;
+
 import azkaban.event.EventHandler;
 import azkaban.executor.selector.ExecutorComparator;
 import azkaban.executor.selector.ExecutorFilter;
@@ -27,6 +31,7 @@ import azkaban.flow.FlowUtils;
 import azkaban.history.ExecutionRecover;
 import azkaban.history.GroupTask;
 import azkaban.history.RecoverTrigger;
+import azkaban.log.LogFilterEntity;
 import azkaban.metrics.CommonMetrics;
 import azkaban.project.Project;
 import azkaban.project.ProjectLoader;
@@ -34,38 +39,60 @@ import azkaban.project.ProjectManagerException;
 import azkaban.project.ProjectWhitelist;
 import azkaban.scheduler.ScheduleManager;
 import azkaban.user.User;
-import azkaban.utils.*;
+import azkaban.utils.AuthenticationUtils;
 import azkaban.utils.FileIOUtils.JobMetaData;
 import azkaban.utils.FileIOUtils.LogData;
+import azkaban.utils.JwtTokenUtils;
+import azkaban.utils.Pair;
+import azkaban.utils.Props;
+import azkaban.utils.Utils;
+import azkaban.utils.WebUtils;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
-import com.webank.wedatasphere.schedulis.common.jobExecutor.utils.SystemBuiltInParamJodeTimeUtils;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
-import com.webank.wedatasphere.schedulis.common.utils.JwtTokenUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.Thread.State;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import static java.util.Objects.requireNonNull;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.webank.wedatasphere.schedulis.common.jobExecutor.utils.SystemBuiltInParamJodeTimeUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executor manager used to manage the client side job.
@@ -257,7 +284,7 @@ public class ExecutorManager extends EventHandler implements
   /**
    * {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#setupExecutors()
+   * @see azkaban.executor.ExecutorManagerAdapter#setupExecutors()
    */
   @Override
   public void setupExecutors() throws ExecutorManagerException {
@@ -401,7 +428,7 @@ public class ExecutorManager extends EventHandler implements
   /**
    * {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#fetchExecutor(int)
+   * @see azkaban.executor.ExecutorManagerAdapter#fetchExecutor(int)
    */
   @Override
   public Executor fetchExecutor(final int executorId) throws ExecutorManagerException {
@@ -517,7 +544,7 @@ public class ExecutorManager extends EventHandler implements
   /**
    * {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#getActiveFlowsWithExecutor()
+   * @see azkaban.executor.ExecutorManagerAdapter#getActiveFlowsWithExecutor()
    */
   @Override
   public List<Pair<ExecutableFlow, Optional<Executor>>> getActiveFlowsWithExecutor()
@@ -526,7 +553,7 @@ public class ExecutorManager extends EventHandler implements
         new ArrayList<>();
     getActiveFlowsWithExecutorHelper(flows, this.queuedFlows.getAllEntries());
     getActiveFlowsWithExecutorHelper(flows, this.runningExecutions.get().values());
-    // FIXME Add run_date date for page display.
+	// FIXME Add run_date date for page display.
     if(null != flows && !flows.isEmpty()){
       flows.stream().forEach(pair -> {
         ExecutableFlow executableFlow = pair.getFirst();
@@ -571,7 +598,7 @@ public class ExecutorManager extends EventHandler implements
   /**
    * Checks whether the given flow has an active (running, non-dispatched) executions {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#isFlowRunning(int, String)
+   * @see azkaban.executor.ExecutorManagerAdapter#isFlowRunning(int, java.lang.String)
    */
   @Override
   public boolean isFlowRunning(final int projectId, final String flowId) {
@@ -600,7 +627,7 @@ public class ExecutorManager extends EventHandler implements
   /**
    * Fetch ExecutableFlow from database {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#getExecutableFlow(int)
+   * @see azkaban.executor.ExecutorManagerAdapter#getExecutableFlow(int)
    */
   @Override
   public ExecutableFlow getExecutableFlow(final int execId)
@@ -619,6 +646,7 @@ public class ExecutorManager extends EventHandler implements
    * {@inheritDoc}
    *
    * @see ExecutorManagerAdapter#getRunningFlows()
+   * @return
    */
   @Override
   public List<ExecutableFlow> getRunningFlows() {
@@ -686,7 +714,7 @@ public class ExecutorManager extends EventHandler implements
       //Todo jamiesjc: fix error handling.
       logger.error("Failed to fetch recently finished flows.", e);
     }
-    // FIXME Add run_date date for page display.
+	// FIXME Add run_date date for page display.
     if(null != flows && !flows.isEmpty()){
       flows.stream().forEach(executableFlow -> {
         Map<String, String> repeatMap = executableFlow.getRepeatOption();
@@ -1040,8 +1068,8 @@ public class ExecutorManager extends EventHandler implements
    * if flows was dispatched to an executor, cancel by calling Executor else if flow is still in
    * queue, remove from queue and finalize {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#cancelFlow(ExecutableFlow,
-   * String)
+   * @see azkaban.executor.ExecutorManagerAdapter#cancelFlow(azkaban.executor.ExecutableFlow,
+   * java.lang.String)
    */
   @Override
   public void cancelFlow(final ExecutableFlow exFlow, final String userId)
@@ -1436,8 +1464,8 @@ public class ExecutorManager extends EventHandler implements
   /**
    * Manage servlet call for stats servlet in Azkaban execution server {@inheritDoc}
    *
-   * @see ExecutorManagerAdapter#callExecutorStats(int, String,
-   * Pair[])
+   * @see azkaban.executor.ExecutorManagerAdapter#callExecutorStats(int, java.lang.String,
+   * azkaban.utils.Pair[])
    */
   @Override
   public Map<String, Object> callExecutorStats(final int executorId, final String action,
@@ -1711,7 +1739,7 @@ public class ExecutorManager extends EventHandler implements
       exflow.setRepeatId(recover.getRecoverId());
       try {
         message = ExecutorManager.this.submitExecutableFlow(exflow, recover.getSubmitUser());
-      } catch (ExecutorManagerException ex){
+      } catch (Exception ex){
         ExecutorManager.logger.error("submit recover flow failed. ", ex);
       }
       return message;
@@ -1975,8 +2003,8 @@ public class ExecutorManager extends EventHandler implements
         } while (reference.getNumErrors() < this.maxDispatchingErrors);
         // GAVE UP DISPATCHING
         final String message = "Failed to dispatch queued execution " + exflow.getId() + " because "
-            + "reached " + ConfigurationKeys.MAX_DISPATCHING_ERRORS_PERMITTED
-            + " (tried " + reference.getNumErrors() + " executors)";
+                + "reached " + ConfigurationKeys.MAX_DISPATCHING_ERRORS_PERMITTED
+                + " (tried " + reference.getNumErrors() + " executors)";
         ExecutorManager.logger.error(message);
         ExecutorManager.this.executionFinalizer.finalizeFlow(exflow, message, lastError);  // 通用告警
       }
@@ -2097,19 +2125,6 @@ public class ExecutorManager extends EventHandler implements
     return flows;
   }
 
-  /**
-   * 根据条件查找用户的 flow 历史信息
-   * @param projContain
-   * @param flowContain
-   * @param userContain
-   * @param status
-   * @param begin
-   * @param end
-   * @param skip
-   * @param size
-   * @return
-   * @throws ExecutorManagerException
-   */
   @Override
   public List<ExecutableFlow> getUserExecutableFlowsByAdvanceFilter(String projContain,
       String flowContain, String execIdContain,  String userContain, String status, long begin, long end,
@@ -2175,7 +2190,7 @@ public class ExecutorManager extends EventHandler implements
       }
       this.executorLoader.updateExecutableFlow(exFlow);
     } catch (ExecutorManagerException e) {
-      e.printStackTrace();
+      logger.warn("Failed to stopHistory repeatId {}.", repeatId, e);
     }
   }
 
@@ -2218,7 +2233,7 @@ public class ExecutorManager extends EventHandler implements
       executionRecover.setUpdateTime(System.currentTimeMillis());
       executorLoader.updateHistoryRecover(executionRecover);
     } catch (ExecutorManagerException e) {
-      e.printStackTrace();
+      logger.warn("Failed to updateHistoryRecover {}.", executionRecover, e);
     }
   }
 
@@ -2540,7 +2555,7 @@ public class ExecutorManager extends EventHandler implements
   }
 
 
-  /**
+    /**
    *
    *
    * @param exFlow

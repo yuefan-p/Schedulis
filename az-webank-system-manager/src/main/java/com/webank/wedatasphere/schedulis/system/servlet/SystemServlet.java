@@ -28,7 +28,7 @@ import azkaban.webapp.servlet.Page;
 import com.google.common.base.Joiner;
 import com.google.gson.JsonObject;
 import com.google.inject.Injector;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
+import azkaban.executor.DepartmentGroup;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.utils.GsonUtils;
 import com.webank.wedatasphere.schedulis.system.entity.WebankDepartment;

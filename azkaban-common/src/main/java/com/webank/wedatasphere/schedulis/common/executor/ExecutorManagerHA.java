@@ -50,6 +50,7 @@ import azkaban.flow.FlowUtils;
 import azkaban.history.ExecutionRecover;
 import azkaban.history.GroupTask;
 import azkaban.history.RecoverTrigger;
+import azkaban.log.LogFilterEntity;
 import azkaban.metrics.CommonMetrics;
 import azkaban.project.Project;
 import azkaban.project.ProjectLoader;
@@ -64,12 +65,11 @@ import azkaban.utils.Pair;
 import azkaban.utils.Props;
 import azkaban.utils.Utils;
 import azkaban.utils.WebUtils;
+import azkaban.executor.ExecutionCycle;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.webank.wedatasphere.schedulis.common.distributelock.DBTableDistributeLock;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutorQueueLoader;
 import com.webank.wedatasphere.schedulis.common.jobExecutor.utils.SystemBuiltInParamJodeTimeUtils;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
 import com.webank.wedatasphere.schedulis.common.utils.HttpUtils;
 import com.webank.wedatasphere.schedulis.common.utils.JwtTokenUtils;
 import java.io.BufferedInputStream;
@@ -687,6 +687,7 @@ public class ExecutorManagerHA extends EventHandler implements
    * {@inheritDoc}
    *
    * @see ExecutorManagerAdapter#getRunningFlows()
+   * @return
    */
   @Override
   public List<ExecutableFlow> getRunningFlows() {

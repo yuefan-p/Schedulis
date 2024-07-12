@@ -21,7 +21,7 @@ import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.entity.DepartmentMaintainer;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankDepartment;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankUser;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import azkaban.user.User;
 import azkaban.user.UserManager;
 import azkaban.utils.Props;

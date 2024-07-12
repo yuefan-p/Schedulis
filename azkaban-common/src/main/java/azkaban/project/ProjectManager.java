@@ -33,6 +33,9 @@ import azkaban.user.User;
 import azkaban.utils.CaseInsensitiveConcurrentHashMap;
 import azkaban.utils.Props;
 import azkaban.utils.PropsUtils;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.io.Files;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.project.entity.ProjectPermission;
@@ -48,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -77,8 +81,14 @@ public class ProjectManager {
   private SystemManager systemManager;
 
   private boolean isHaModel;
+    // 是否关闭调度，开启查询服务
+    private boolean enableQueryServer;
 
-  @Inject
+    // 开启查询服务后，是否开启project cache
+    private boolean enableProjectCache;
+    private Map<Integer, Project> inactiveProject;
+
+    @Inject
   public ProjectManager(final AzkabanProjectLoader azkabanProjectLoader,
       final ProjectLoader loader,
       final StorageManager storageManager,
@@ -103,6 +113,56 @@ public class ProjectManager {
     new XmlValidatorManager(prop);
     loadAllProjects();
     loadProjectWhiteList();
+  }
+
+  private final LoadingCache<Integer, Map<String, Flow>> flowCache = CacheBuilder
+          .newBuilder()
+          .maximumSize(500)
+          .expireAfterAccess(15, TimeUnit.MINUTES)
+          .build(new CacheLoader<Integer, Map<String, Flow>>() {
+            @Override
+            public Map<String, Flow> load(Integer projectId) throws Exception {
+              return getFlowsFromDB(projectId);
+            }
+
+          });
+
+  private Map<Integer, Project> getProjectsIDMap() {
+    if (!enableQueryServer || enableProjectCache) {
+      return this.projectsById;
+    } else {
+      //1. 直接load all
+      return loadPorjectMap(1);
+    }
+  }
+
+  private Map<String, Flow> getFlowsFromDB(Integer projectId) {
+    Project fetchedProject = getProjectsIDMap().get(projectId);
+    if (null == fetchedProject) {
+      fetchedProject = getInactiveProjectIDMap().get(projectId);
+    }
+    if (fetchedProject == null) {
+      try {
+        fetchedProject = this.projectLoader.fetchProjectById(projectId);
+      } catch (final ProjectManagerException e) {
+        logger.error("Could not load project from store.", e);
+      }
+    }
+
+    if (null == fetchedProject) {
+      throw new RuntimeException("Could not load project flows from store, for project not exists: " + projectId);
+    }
+
+    try {
+      final List<Flow> flows = this.projectLoader.fetchAllProjectFlows(fetchedProject);
+      final Map<String, Flow> flowMap = new HashMap<>();
+      for (final Flow flow : flows) {
+        flowMap.put(flow.getId(), flow);
+      }
+      return flowMap;
+    } catch (final ProjectManagerException e) {
+      throw new RuntimeException("Could not load project flows from store. project: " + projectId, e);
+    }
   }
 
   public boolean hasFlowTrigger(final Project project, final Flow flow)
@@ -1196,4 +1256,46 @@ public class ProjectManager {
   public List<ProjectVersion> getProjectVersions(final Project project,final int num,final int skip) throws ProjectManagerException {
     return this.projectLoader.getProjectVersions(project, num, skip);
   }
+
+    private Map<Integer, Project> getInactiveProjectIDMap() {
+        if (!enableQueryServer || enableProjectCache) {
+            return this.inactiveProject;
+        } else {
+            //1. 直接load all
+            return loadPorjectMap(0);
+        }
+    }
+  private Map<Integer, Project> loadPorjectMap(int active) {
+    Map<Integer, Project> projectIDMap = new HashMap<>();
+    final List<Project> projects;
+    try {
+      projects = this.projectLoader.fetchAllProjects(active);
+    } catch (final ProjectManagerException e) {
+      throw new RuntimeException("Could not load projects from store.", e);
+    }
+    for (final Project proj : projects) {
+      projectIDMap.put(proj.getId(), proj);
+    }
+    return projectIDMap;
+  }
+
+    public void deleteInactiveProjectByTime(long interval) {
+        try {
+            for (Project project : getInactiveProjectIDMap().values()) {
+                if (project.getLastModifiedTimestamp() < interval) {
+                    logger.debug("delete project:{}", project.getId());
+                    this.inactiveProject.remove(project.getId());
+                    this.flowCache.invalidate(project.getId());
+                    if (this.isHaModel) {
+                        HttpUtils
+                                .reloadWebData(this.getProps().getStringList("azkaban.all.web.url"), "deleteProject",
+                                        project.getId() + "");
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            logger.error("delete project failed.", e);
+        }
+    }
 }

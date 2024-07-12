@@ -5,7 +5,7 @@ import azkaban.project.Project;
 import azkaban.project.ProjectManager;
 import azkaban.server.session.Session;
 import azkaban.system.SystemManager;
-import azkaban.system.common.TransitionService;
+import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;
 import azkaban.user.User;
 import azkaban.webapp.AzkabanWebServer;
 import org.slf4j.Logger;

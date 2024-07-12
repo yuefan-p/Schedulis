@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.codehaus.jackson.JsonFactory;
@@ -275,5 +276,21 @@ public class JSONUtils {
     }
 
     return false;
+  }
+
+  public static <T> T parseObject(String json, Class<T> valueType) throws IOException {
+    ObjectMapper mapper = JacksonObjectMapperFactory.getInstance();
+    T instance = mapper.readValue(json, valueType);
+    return instance;
+  }
+
+  public static class JacksonObjectMapperFactory {
+    private static class InstanceHolder {
+      public static ObjectMapper instance = new ObjectMapper();
+    }
+    public static ObjectMapper getInstance() {
+      return InstanceHolder.instance;
+    }
+
   }
 }

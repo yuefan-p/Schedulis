@@ -19,7 +19,7 @@ package com.webank.wedatasphere.schedulis.common.executor;
 import azkaban.db.DatabaseOperator;
 import azkaban.db.SQLTransaction;
 import azkaban.executor.ExecutorManagerException;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

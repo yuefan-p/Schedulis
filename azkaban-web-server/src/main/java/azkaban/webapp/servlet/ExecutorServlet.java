@@ -63,13 +63,13 @@ import azkaban.webapp.WebMetrics;
 import azkaban.webapp.plugin.PluginRegistry;
 import azkaban.webapp.plugin.ViewerPlugin;
 
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
+import azkaban.log.LogFilterEntity;
 import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
 import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.user.SystemUserManager;
 import com.webank.wedatasphere.schedulis.common.utils.AlertUtil;
 import com.webank.wedatasphere.schedulis.common.utils.GsonUtils;

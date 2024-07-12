@@ -67,7 +67,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import com.webank.wedatasphere.schedulis.common.jobExecutor.utils.SystemBuiltInParamJodeTimeUtils;
 import com.webank.wedatasphere.schedulis.common.utils.LogUtils;
 import com.webank.wedatasphere.schedulis.exec.execapp.KillFlowTrigger;

@@ -17,6 +17,10 @@
 package azkaban.executor;
 
 import azkaban.db.DatabaseOperator;
+import azkaban.jobhook.JdbcJobHookHandlerSet;
+import azkaban.jobhook.JdbcJobHookHandlerSet.JobHookResultHandler;
+import azkaban.jobhook.JobHook;
+import azkaban.project.ProjectManagerException;
 import azkaban.utils.GZIPUtils;
 import azkaban.utils.JSONUtils;
 import azkaban.utils.Pair;
@@ -27,15 +31,21 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.util.StringUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class ExecutionJobDao {
@@ -101,6 +111,20 @@ public class ExecutionJobDao {
           .getEndTime(), node.getStatus().getNumVal(), outputParam, node
           .getExecutableFlow().getExecutionId(), node.getParentFlow()
           .getFlowPath(), node.getId(), node.getAttempt());
+    } catch (final SQLException e) {
+      throw new ExecutorManagerException("Error updating job " + node.getId(), e);
+    }
+  }
+
+  public void updateExecutableNodeStatus(final ExecutableNode node) throws ExecutorManagerException {
+    final String UPSERT_EXECUTION_NODE = "UPDATE execution_jobs "
+            + "SET status=? "
+            + "WHERE exec_id=? AND flow_id=? AND job_id=? AND attempt=?";
+
+    try {
+      this.dbOperator.update(UPSERT_EXECUTION_NODE, node.getStatus().getNumVal(), node
+              .getExecutableFlow().getExecutionId(), node.getParentFlow()
+              .getFlowPath(), node.getId(), node.getAttempt());
     } catch (final SQLException e) {
       throw new ExecutorManagerException("Error updating job " + node.getId(), e);
     }
@@ -182,7 +206,7 @@ public class ExecutionJobDao {
       final int size) throws ExecutorManagerException {
     try {
       final List<ExecutableJobInfo> info =
-          this.dbOperator.query(FetchExecutableJobHandler.FETCH_PROJECT_EXECUTABLE_NODE,
+          this.dbOperator.query(FetchExecutableJobHandler.FETCH_PROJECT_EXECUTABLE_NODE_ALL,
               new FetchExecutableJobHandler(), projectId, jobId, skip, size);
       if (info == null || info.isEmpty()) {
         return null;
@@ -382,4 +406,37 @@ public class ExecutionJobDao {
       return attachmentsJson;
     }
   }
+
+  public String getEventType(final String topic, final String msgName) {
+    try {
+      return this.dbOperator
+          .query(FetchEventTypeHandler.FETCH_EVENT_TYPE, new FetchEventTypeHandler(), topic,
+              msgName);
+    } catch (final Exception e) {
+      logger.error("get event type error", e);
+      return null;
+    }
+  }
+
+  private static class FetchEventTypeHandler implements
+      ResultSetHandler<String> {
+
+    private static final String FETCH_EVENT_TYPE =
+        "SELECT source_type FROM event_queue WHERE topic=? AND msg_name=? order by send_time desc limit 1";
+
+    @Override
+    public String handle(final ResultSet rs) throws SQLException {
+      if (rs.next()) {
+        String sourceType = rs.getString(1);
+        if (StringUtils.isEmpty(sourceType)) {
+          return "eventchecker";
+        } else {
+          return "rmb";
+        }
+      } else {
+        return null;
+      }
+    }
+  }
+
 }

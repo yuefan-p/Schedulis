@@ -146,7 +146,10 @@ public class User {
     return new ArrayList<>(this.proxyUsers);
   }
 
-  public static interface UserPermissions {
+    public void setNormalUser(String normalUserName) {
+    }
+
+    public static interface UserPermissions {
 
     public boolean hasPermission(String permission);
 

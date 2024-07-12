@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.schedulis.common.utils;
 
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
+import azkaban.log.LogFilterEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;

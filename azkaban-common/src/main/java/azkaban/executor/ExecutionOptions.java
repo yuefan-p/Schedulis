@@ -59,6 +59,7 @@ public class ExecutionOptions {
   private boolean notifyOnLastFailure = false;
   private boolean failureEmailsOverride = false;
   private boolean successEmailsOverride = false;
+  private boolean enabledCacheProjectFiles = false;
   private ArrayList<String> failureEmails = new ArrayList<>();
   private ArrayList<String> successEmails = new ArrayList<>();
 
@@ -71,6 +72,8 @@ public class ExecutionOptions {
   private Map<String, String> flowParameters = new HashMap<>();
   private FailureAction failureAction = FailureAction.FINISH_CURRENTLY_RUNNING;
   private List<Object> initiallyDisabledJobs = new ArrayList<>();
+  private boolean isCrossDay;
+  private String executeType;
 
   public static ExecutionOptions createFromObject(final Object obj) {
     if (obj == null || !(obj instanceof Map)) {
@@ -270,7 +273,27 @@ public class ExecutionOptions {
     return new GsonBuilder().setPrettyPrinting().create().toJson(toObject());
   }
 
-  public enum FailureAction {
+  public boolean isCrossDay() {
+    return isCrossDay;
+  }
+
+  public String getExecuteType() {
+    return executeType;
+  }
+
+  public void setExecuteType(String executeType) {
+    this.executeType = executeType;
+  }
+
+    public boolean isEnabledCacheProjectFiles() {
+        return enabledCacheProjectFiles;
+    }
+
+    public void setEnabledCacheProjectFiles(boolean enabledCacheProjectFiles) {
+        this.enabledCacheProjectFiles = enabledCacheProjectFiles;
+    }
+
+    public enum FailureAction {
     FINISH_CURRENTLY_RUNNING, CANCEL_ALL, FINISH_ALL_POSSIBLE, FAILED_PAUSE;
   }
 }

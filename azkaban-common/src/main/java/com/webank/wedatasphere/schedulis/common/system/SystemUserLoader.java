@@ -21,7 +21,7 @@ import com.webank.wedatasphere.schedulis.common.system.entity.WebankDepartment;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankUser;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssPermissions;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssRole;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import java.util.List;
 
 public interface SystemUserLoader {

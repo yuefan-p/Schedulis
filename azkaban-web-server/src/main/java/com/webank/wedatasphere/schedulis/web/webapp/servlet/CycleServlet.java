@@ -31,7 +31,7 @@ import azkaban.server.session.Session;
 import azkaban.user.User;
 import azkaban.webapp.AzkabanWebServer;
 import azkaban.webapp.servlet.LoginAbstractAzkabanServlet;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;
 import java.io.IOException;

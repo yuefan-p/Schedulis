@@ -16,7 +16,7 @@
 
 package com.webank.wedatasphere.schedulis.common.system.entity;
 
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
+import azkaban.executor.DepartmentGroup;
 
 public class WebankDepartment {
 

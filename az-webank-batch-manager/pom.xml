@@ -8,36 +8,36 @@
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>com.wedatasphere.azkaban</groupId>
-    <artifactId>WTSS</artifactId>
-    <version>RELEASE</version>
+    <groupId>com.webank.wedatasphere.schedulis</groupId>
+    <artifactId>schedulis</artifactId>
+    <version>0.9.0</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>com.wedatasphere.azkaban</groupId>
+      <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>azkaban-common</artifactId>
-      <version>${azkaban.version}</version>
+      <version>${schedulis.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.wedatasphere.azkaban</groupId>
+      <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>azkaban-web-server</artifactId>
-      <version>${azkaban.version}</version>
+      <version>${schedulis.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.wedatasphere.azkaban</groupId>
+      <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>az-core</artifactId>
-      <version>${azkaban.version}</version>
+      <version>${schedulis.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.wedatasphere.azkaban</groupId>
+      <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>azkaban-spi</artifactId>
-      <version>${azkaban.version}</version>
+      <version>${schedulis.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.wedatasphere.azkaban</groupId>
+      <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>azkaban-db</artifactId>
-      <version>${azkaban.version}</version>
+      <version>${schedulis.version}</version>
     </dependency>
 
     <dependency>
@@ -179,8 +179,8 @@
                     <include>*.jar</include>
                   </includes>
                   <excludes>
-                    <exclude>az-wedatasphere-batch-manager-${azkaban.version}-javadoc.jar</exclude>
-                    <exclude>az-wedatasphere-batch-manager-${azkaban.version}-sources.jar</exclude>
+                    <exclude>az-webank-batch-manager-${schedulis.version}-javadoc.jar</exclude>
+                    <exclude>az-webank-batch-manager-${schedulis.version}-sources.jar</exclude>
                   </excludes>
                 </resource>
               </resources>

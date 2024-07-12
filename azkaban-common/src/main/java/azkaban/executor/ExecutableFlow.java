@@ -19,6 +19,8 @@ import azkaban.flow.Flow;
 import azkaban.project.Project;
 import azkaban.sla.SlaOption;
 import azkaban.utils.TypedMapWrapper;
+import okhttp3.internal.http2.ErrorCode;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,6 +106,11 @@ public class ExecutableFlow extends ExecutableFlowBase {
   private String comment = "";
 
   private Integer repeatId;
+  private String flowId;
+  private int lastParameterTime;
+  private int lastExecId;
+  private int lastVersion;
+  private List<ErrorCode> errorCodeResult;
 
   public ExecutableFlow(final Project project, final Flow flow) {
     this.projectId = project.getId();
@@ -153,6 +160,7 @@ public class ExecutableFlow extends ExecutableFlowBase {
     return new HashSet<>(this.proxyUsers);
   }
 
+  @Override
   public ExecutionOptions getExecutionOptions() {
     return this.executionOptions;
   }
@@ -173,6 +181,7 @@ public class ExecutableFlow extends ExecutableFlowBase {
     this.nsWtss = nsWtss;
   }
 
+  @Override
   public String getRunDate() {
     return runDate;
   }
@@ -329,6 +338,7 @@ public class ExecutableFlow extends ExecutableFlowBase {
     this.cycleOption = cycleOption;
   }
 
+  @Override
   public int getFlowType() {
     return flowType;
   }
@@ -337,6 +347,7 @@ public class ExecutableFlow extends ExecutableFlowBase {
     this.flowType = flowType;
   }
 
+  @Override
   public Map<String, Object> getOtherOption() {
     return otherOption;
   }
@@ -553,4 +564,44 @@ public class ExecutableFlow extends ExecutableFlowBase {
   public void addJobOutputGlobalParam(ConcurrentHashMap<String, String> jobOutputParam) {
     this.jobOutputGlobalParam.putAll(jobOutputParam);
   }
+
+    public void setFlowId(String flowId) {
+        this.flowId = flowId;
+    }
+
+    public String getFlowId() {
+        return flowId;
+    }
+
+  public int getLastParameterTime() {
+    return lastParameterTime;
+  }
+
+  public void setLastParameterTime(int lastParameterTime) {
+    this.lastParameterTime = lastParameterTime;
+  }
+
+  public int getLastExecId() {
+    return lastExecId;
+  }
+
+  public void setLastExecId(int lastExecId) {
+    this.lastExecId = lastExecId;
+  }
+
+  public int getLastVersion() {
+    return lastVersion;
+  }
+
+  public void setLastVersion(int lastVersion) {
+    this.lastVersion = lastVersion;
+  }
+
+    public List<ErrorCode>  getErrorCodeResult() {
+        return errorCodeResult;
+    }
+
+    public void setErrorCodeResult(List<ErrorCode> errorCodeResult) {
+        this.errorCodeResult = errorCodeResult;
+    }
 }

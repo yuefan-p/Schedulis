@@ -18,7 +18,7 @@ package com.webank.wedatasphere.schedulis.system.dao.impl;
 
 import azkaban.db.DatabaseOperator;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
+import azkaban.executor.DepartmentGroup;
 import com.webank.wedatasphere.schedulis.common.utils.MD5Utils;
 import com.webank.wedatasphere.schedulis.system.dao.SystemUserLoader;
 import com.webank.wedatasphere.schedulis.system.entity.*;

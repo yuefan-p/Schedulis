@@ -24,7 +24,7 @@ import azkaban.executor.JdbcExecutorLoader;
 import azkaban.project.ProjectLoader;
 import azkaban.storage.StorageManager;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
+import azkaban.executor.DepartmentGroup;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.utils.MD5Utils;
 import com.webank.wedatasphere.schedulis.system.dao.SystemUserLoader;

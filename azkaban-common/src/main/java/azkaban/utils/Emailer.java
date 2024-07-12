@@ -21,19 +21,26 @@ import static java.util.Objects.requireNonNull;
 import azkaban.Constants;
 import azkaban.Constants.ConfigurationKeys;
 import azkaban.alert.Alerter;
+import azkaban.batch.HoldBatchAlert;
+import azkaban.eventnotify.entity.EventNotify;
 import azkaban.executor.*;
 import azkaban.executor.mail.DefaultMailCreator;
 import azkaban.executor.mail.MailCreator;
 import azkaban.history.ExecutionRecover;
 import azkaban.metrics.CommonMetrics;
+import azkaban.project.entity.FlowBusiness;
+import azkaban.scheduler.Schedule;
 import azkaban.sla.SlaOption;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimaps;
 
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
+
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Map;
 
@@ -145,13 +152,33 @@ public class Emailer extends AbstractMailer implements Alerter {
   }
 
   @Override
+  public String alertOnIMSRegistStart(String projectName, String flowId, FlowBusiness flowBusiness, Props props) {
+    return null;
+  }
+
+  @Override
   public void alertOnIMSRegistFinish(ExecutableFlow exflow,Map<String, Props> sharedProps,Logger logger) throws Exception {
     logger.warn("alertOnIMSRegistFinish not implement.");
   }
 
   @Override
+  public void alertOnIMSUploadForFlow(ExecutableFlowBase flowBase, Map<String, Props> sharedProps, Logger logger, FlowBusiness flowBusiness, ExecutableNode node, Props props) throws Exception {
+
+  }
+
+  @Override
+  public void alertOnIMSUploadForNode(ExecutableFlowBase flowBase, Logger logger, FlowBusiness flowBusiness, ExecutableNode node, Props props) {
+
+  }
+
+  @Override
   public void alertOnIMSRegistError(ExecutableFlow exflow,Map<String, Props> sharedProps,Logger logger) throws Exception {
     logger.warn("alertOnIMSRegistError not implement.");
+  }
+
+  @Override
+  public void alertOnSla(SlaOption slaOption, ExecutableFlow exflow, String alertType) throws Exception {
+
   }
 
 
@@ -198,6 +225,11 @@ public class Emailer extends AbstractMailer implements Alerter {
         sendFailedUpdateEmail(executor, updateException, mailCreator, emailsToFlows.get(emailList));
       }
     }
+  }
+
+  @Override
+  public void sendAlert(List<String> alterList, String subject, String body) {
+
   }
 
   /**
@@ -263,6 +295,16 @@ public class Emailer extends AbstractMailer implements Alerter {
   }
 
   @Override
+  public void alertOnIMSRegistFlowStart(ExecutableFlow exflow, Map<String, Props> sharedProps, Logger logger, FlowBusiness flowBusiness, Props props) throws Exception {
+
+  }
+
+  @Override
+  public void alertOnIMSRegistNodeStart(ExecutableFlow exflow, Logger logger, FlowBusiness flowBusiness, Props props, ExecutableNode node) throws Exception {
+
+  }
+
+  @Override
   public void alertOnFinishSla(SlaOption slaOption, ExecutableFlow exflow) throws Exception {
     logger.info("alertOnFinishSla.");
     final EmailMessage message = this.messageCreator.createMessage();
@@ -296,5 +338,25 @@ public class Emailer extends AbstractMailer implements Alerter {
   @Override
   public void alertOnHistoryRecoverFinish(ExecutionRecover executionRecover) throws Exception{
     logger.warn("alertOnHistoryRecoverFinish not implement.");
+  }
+
+  @Override
+  public void alertOnHoldBatch(HoldBatchAlert holdBatchAlert, ExecutorLoader executorLoader, boolean isFrequent) {
+
+  }
+
+  @Override
+  public void doMissSchedulesAlerter(Set<Schedule> scheduleList, Date startTime, Date shutdownTime) {
+
+  }
+
+  @Override
+  public void alertOnSingnalBacklog(int jobId, Map<String, String> consumeInfo) {
+
+  }
+
+  @Override
+  public void alertOnFlowStarted(ExecutableFlow executableFlow, List<EventNotify> eventNotifies) {
+
   }
 }

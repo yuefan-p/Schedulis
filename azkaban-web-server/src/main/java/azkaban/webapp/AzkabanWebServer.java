@@ -80,7 +80,7 @@ import azkaban.webapp.servlet.TriggerManagerServlet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.linkedin.restli.server.RestliServlet;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import com.webank.wedatasphere.schedulis.common.executor.ExecutorManagerHA;
 import com.webank.wedatasphere.schedulis.common.jmx.JmxExecutorManagerAdapter;
 import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;

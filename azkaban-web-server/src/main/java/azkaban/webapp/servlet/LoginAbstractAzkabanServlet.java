@@ -35,7 +35,7 @@ import azkaban.webapp.WebMetrics;
 import com.webank.wedatasphere.schedulis.common.i18nutils.LoadJsonUtils;
 import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.user.SystemUserManager;
 import com.webank.wedatasphere.schedulis.common.utils.RSAUtils;
 import com.webank.wedatasphere.schedulis.common.utils.XSSFilterUtils;

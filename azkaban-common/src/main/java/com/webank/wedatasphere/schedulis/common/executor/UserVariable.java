@@ -16,7 +16,7 @@
 
 package com.webank.wedatasphere.schedulis.common.executor;
 
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 
 import java.util.ArrayList;
 import java.util.List;

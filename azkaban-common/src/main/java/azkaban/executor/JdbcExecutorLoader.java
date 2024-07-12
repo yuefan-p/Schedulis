@@ -16,31 +16,35 @@
 
 package azkaban.executor;
 
+import azkaban.batch.HoldBatchAlert;
+import azkaban.batch.HoldBatchDao;
 import azkaban.executor.ExecutorLogEvent.EventType;
 import azkaban.history.ExecutionRecover;
 import azkaban.history.ExecutionRecoverDao;
 import azkaban.history.RecoverTrigger;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterDao;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.jobhook.JobHook;
+import azkaban.log.LogFilterDao;
+import azkaban.log.LogFilterEntity;
+import azkaban.system.entity.WtssUser;
 import azkaban.utils.FileIOUtils.LogData;
 import azkaban.utils.Pair;
 import azkaban.utils.Props;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroupDao;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycleDao;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionLogsAdapter;
-import com.webank.wedatasphere.schedulis.common.executor.UserVariable;
-import com.webank.wedatasphere.schedulis.common.executor.UserVariableDao;
-import java.util.*;
+import java.io.File;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import azkaban.executor.UserVariable;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
-import java.time.Duration;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class JdbcExecutorLoader implements ExecutorLoader {
@@ -811,7 +815,7 @@ public class JdbcExecutorLoader implements ExecutorLoader {
   }
 
   @Override
-  public int updateUserVariable(UserVariable userVariable) throws ExecutorManagerException{
+  public int updateUserVariable(UserVariable userVariable) throws Exception {
     return this.userVariableDao.updateUserVariable(userVariable);
   }
 
@@ -857,4 +861,63 @@ public class JdbcExecutorLoader implements ExecutorLoader {
     return this.executionFlowDao.getRunningExecByLock(projectName, flowId);
   }
 
+  @Override
+  public String getEventType(String topic, String msgName) {
+    return this.executionJobDao.getEventType(topic,msgName);
+  }
+
+  @Override
+  public UserVariable findUserVariableByKey(String key) throws ExecutorManagerException {
+    return this.userVariableDao.findUserVariableByKey(key);
+  }
+
+  @Override
+  public int executorOffline(int executorid) throws ExecutorManagerException {
+    return departmentGroupDao.executorOffline(executorid);
+  }
+
+  @Override
+  public int executorOnline(int executorid) throws ExecutorManagerException {
+    return departmentGroupDao.executorOnline(executorid);
+  }
+
+  @Override
+  public boolean checkIsOnline(int executorid) throws ExecutorManagerException {
+    return departmentGroupDao.checkIsOnline(executorid);
+  }
+
+  @Override
+  public Set<DmsBusPath> getDmsBusPathFromDb(String jobCode, String lastMonthString) {
+    return this.executionFlowDao.getDmsBusPathFromDb(jobCode, lastMonthString);
+  }
+
+  @Override
+  public void insertOrUpdate(DmsBusPath dmsBusPath) {
+    this.executionFlowDao.insertOrUpdate(dmsBusPath);
+  }
+
+  @Override
+  public long getFinalScheduleTime(long triggerInitTime) {
+    return 0;
+  }
+
+  @Override
+  public JobHook getJobHook(String jobCode) {
+    return null;
+  }
+
+    @Override
+    public HoldBatchAlert getHoldBatchAlert(long id) {
+        return null;
+    }
+
+  @Override
+  public void updateHoldBatchFrequentStatus(HoldBatchAlert holdBatchAlert) {
+
+  }
+
+  @Override
+  public void updateHoldBatchAlertStatus(HoldBatchAlert holdBatchAlert) {
+
+  }
 }

@@ -19,7 +19,7 @@ package azkaban.executor;
 import azkaban.alert.Alerter;
 import azkaban.metrics.CommonMetrics;
 import azkaban.utils.Pair;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

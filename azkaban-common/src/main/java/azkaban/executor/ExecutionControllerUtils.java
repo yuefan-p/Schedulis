@@ -18,7 +18,7 @@ package azkaban.executor;
 
 import azkaban.alert.Alerter;
 
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

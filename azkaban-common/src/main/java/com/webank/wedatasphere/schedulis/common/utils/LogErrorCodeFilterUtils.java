@@ -16,9 +16,9 @@
 
 package com.webank.wedatasphere.schedulis.common.utils;
 
-import com.webank.wedatasphere.schedulis.common.log.LogCodeType;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
-import com.webank.wedatasphere.schedulis.common.log.OperateType;
+import azkaban.log.LogCodeType;
+import azkaban.log.LogFilterEntity;
+import azkaban.log.OperateType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

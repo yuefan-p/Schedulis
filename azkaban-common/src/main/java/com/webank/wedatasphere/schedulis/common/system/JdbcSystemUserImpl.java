@@ -17,13 +17,13 @@
 package com.webank.wedatasphere.schedulis.common.system;
 
 import azkaban.db.DatabaseOperator;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
+import azkaban.executor.DepartmentGroup;
 import com.webank.wedatasphere.schedulis.common.system.entity.DepartmentMaintainer;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankDepartment;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankUser;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssPermissions;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssRole;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.utils.MD5Utils;
 import azkaban.utils.Props;
 import java.sql.ResultSet;

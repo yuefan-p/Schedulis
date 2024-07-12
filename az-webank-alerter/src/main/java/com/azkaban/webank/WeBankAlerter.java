@@ -194,12 +194,22 @@ public class WeBankAlerter implements Alerter {
   }
 
   @Override
+  public void alertOnIMSRegistStart(ExecutableFlow exflow, Map<String, Props> sharedProps, Logger logger) throws Exception {
+
+  }
+
+  @Override
   public String alertOnIMSRegistStart(String projectName, String flowId, FlowBusiness flowBusiness,
       Props props) {
     //上报IMS 业务逻辑实现
     logger.info("alertOnIMSRegistStart ims regist");
     return HttpUtils
         .registerToIMS(projectName, flowId, this.props, flowBusiness, props);
+  }
+
+  @Override
+  public void alertOnIMSRegistFinish(ExecutableFlow exflow, Map<String, Props> sharedProps, Logger logger) throws Exception {
+
   }
 
   @Override
@@ -1894,6 +1904,10 @@ public class WeBankAlerter implements Alerter {
 
   }
 
+  @Override
+  public void alertOnSla(SlaOption slaOption, ExecutableFlow exflow) throws Exception {
+
+  }
 
 
   private List<String> getReceiverList(List<String> exceptionalUsers, List<WebankUser> userList,

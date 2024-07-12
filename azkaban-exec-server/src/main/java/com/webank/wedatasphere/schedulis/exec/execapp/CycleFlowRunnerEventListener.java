@@ -39,7 +39,7 @@ import azkaban.utils.Props;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycleDao;
 import com.webank.wedatasphere.schedulis.common.function.CheckedSupplier;
 import java.io.IOException;

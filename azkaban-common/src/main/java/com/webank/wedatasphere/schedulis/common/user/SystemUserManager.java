@@ -24,7 +24,7 @@ import com.webank.wedatasphere.schedulis.common.system.SystemUserLoader;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssPermissions;
 import com.webank.wedatasphere.schedulis.common.system.entity.WtssRole;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.utils.LdapCheckCenter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

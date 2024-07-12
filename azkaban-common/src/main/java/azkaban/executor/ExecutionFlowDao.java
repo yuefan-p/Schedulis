@@ -551,7 +551,57 @@ public class ExecutionFlowDao {
           + executorId, e);
     }
   }
+  public static class DmsBusPathHandler implements
+          ResultSetHandler<Set<DmsBusPath>> {
 
+
+    static String INSERT_OR_UPDATE_BUS_PATH =
+            "INSERT INTO bus_path_nodes(bus_path_name, bus_path_id, job_code, status, modified_time) values (?,?,?,?,?)"
+                    + "ON DUPLICATE KEY UPDATE modified_time = VALUES(modified_time)";
+
+    static String BUS_PATH_RESOURCE =
+            "select bus_path_id,bus_path_name,job_code,status from bus_path_nodes WHERE job_code = ?";
+
+    static String BUS_PATH_SELECT_BY_UPDATE_TIME =
+            "select bus_path_id,bus_path_name,job_code,status from bus_path_nodes WHERE job_code = ? and modified_time > ?";
+
+    @Override
+    public Set<DmsBusPath> handle(final ResultSet rs) throws SQLException {
+      final Set<DmsBusPath> jobCodeSet = new HashSet<>();
+      if (!rs.next()) {
+        return jobCodeSet;
+      }
+      do {
+        DmsBusPath dmsBusPath = new DmsBusPath();
+        dmsBusPath.setBusPathId(rs.getString(1));
+        dmsBusPath.setBusPathName(rs.getString(2));
+        dmsBusPath.setJobCode(rs.getString(3));
+        dmsBusPath.setStatus(rs.getString(4));
+        jobCodeSet.add(dmsBusPath);
+      } while (rs.next());
+      return jobCodeSet;
+    }
+  }
+
+  public Set<DmsBusPath> getDmsBusPathFromDb(String jobCode, String updateTime) {
+    try {
+      return dbOperator
+              .query(DmsBusPathHandler.BUS_PATH_SELECT_BY_UPDATE_TIME, new DmsBusPathHandler(), jobCode, updateTime);
+    } catch (Exception e) {
+      logger.warn("Failed to getDmsBusPathFromDb, jobCode {}, updateTime {}", jobCode, updateTime, e);
+    }
+    return null;
+  }
+
+  public void insertOrUpdate(DmsBusPath dmsBusPath) {
+    try {
+      dbOperator
+              .update(DmsBusPathHandler.INSERT_OR_UPDATE_BUS_PATH,dmsBusPath.getBusPathName(), dmsBusPath.getBusPathId(),
+                      dmsBusPath.getJobCode(), dmsBusPath.getStatus(), dmsBusPath.getModifiedTime());
+    } catch (Exception e) {
+      logger.warn("Failed to insert dms bus path, jobCode {}", dmsBusPath.getJobCode(), e);
+    }
+  }
   public static class SelectFromExecutionFlows implements
       ResultSetHandler<List<Integer>> {
 

@@ -409,16 +409,5 @@ public class WebankXmlUserManager implements UserManager {
     }
   }
 
-  @Override
-  public User validateNonRealNameUser(String username, String password, String normalUserName, String normalPassword, UserType type) throws UserManagerException {
-    return null;
-  }
-
-  @Override
-  public void validDepartmentOpsUser(String username, String normalUserName)
-      throws UserManagerException {
-
-  }
-
 
 }

@@ -80,6 +80,7 @@ public class ExecutableNode {
   // Record whether the execution link has task execution failure.
   private boolean isDependentlinkFailed = false;
   private long lastStartTime = -1;
+  private Set<DmsBusPath> jobCodeList;
 
   public ExecutableNode(final Node node) {
     this.id = node.getId();
@@ -535,5 +536,13 @@ public class ExecutableNode {
 
   public void setConditionOnJobStatus(final ConditionOnJobStatus conditionOnJobStatus) {
     this.conditionOnJobStatus = conditionOnJobStatus;
+  }
+
+  public Set<DmsBusPath> getJobCodeList() {
+    return jobCodeList;
+  }
+
+  public void setJobCodeList(Set<DmsBusPath> jobCodeList) {
+    this.jobCodeList = jobCodeList;
   }
 }

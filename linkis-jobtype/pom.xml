@@ -4,16 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.wedatasphere.azkaban</groupId>
-        <artifactId>WTSS</artifactId>
+        <groupId>com.webank.wedatasphere.schedulis</groupId>
+        <artifactId>schedulis</artifactId>
         <version>RELEASE</version>
     </parent>
 
     <artifactId>linkis-jobtype</artifactId>
-    <version>${azkaban.version}</version>
+    <version>${schedulis.version}</version>
     <properties>
-        <linkis.version>1.1.14-wds</linkis.version>
-        <dss.version>1.1.0.17-SNAPSHOT</dss.version>
+        <linkis.version>1.4.0-SNAPSHOT</linkis.version>
+        <dss.version>1.1.1</dss.version>
     </properties>
 
     <dependencies>
@@ -41,9 +41,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.wedatasphere.azkaban</groupId>
+            <groupId>com.webank.wedatasphere.schedulis</groupId>
             <artifactId>azkaban-common</artifactId>
-            <version>${azkaban.version}</version>
+            <version>${schedulis.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.webank.azkaban</groupId>

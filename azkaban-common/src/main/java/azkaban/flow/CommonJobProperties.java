@@ -30,6 +30,7 @@ public class CommonJobProperties {
    * Force a node to be a root node in a flow, even if there are other jobs dependent on it.
    */
   public static final String ROOT_NODE = "root.node";
+  public static final String FLOW_SUBMIT_USER = "submit_user";
 
   /**
    * Comma delimited list of job names which are dependencies

@@ -16,22 +16,25 @@
 
 package azkaban.executor;
 
+import azkaban.batch.HoldBatchAlert;
 import azkaban.executor.ExecutorLogEvent.EventType;
 import azkaban.history.ExecutionRecover;
 import azkaban.history.RecoverTrigger;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.jobhook.JobHook;
+import azkaban.log.LogFilterEntity;
+import azkaban.system.entity.WtssUser;
 import azkaban.utils.FileIOUtils.LogData;
 import azkaban.utils.Pair;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
-import com.webank.wedatasphere.schedulis.common.executor.UserVariable;
+import azkaban.executor.DepartmentGroup;
+import azkaban.executor.ExecutionCycle;
+import azkaban.executor.UserVariable;
 import java.io.File;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ExecutorLoader {
 
@@ -529,7 +532,7 @@ public interface ExecutorLoader {
 
   public int deleteUserVariable(UserVariable variable) throws ExecutorManagerException;
 
-  public int updateUserVariable(UserVariable userVariable) throws ExecutorManagerException;
+  public int updateUserVariable(UserVariable userVariable) throws Exception;
 
   public List<UserVariable> fetchAllUserVariable(UserVariable userVariable) throws ExecutorManagerException;
 
@@ -565,4 +568,27 @@ public interface ExecutorLoader {
 
   List<Integer> getRunningExecByLock(Integer projectName, String flowId) throws ExecutorManagerException;
 
+  String getEventType(String topic, String msgName);
+
+  UserVariable findUserVariableByKey(String key) throws ExecutorManagerException;
+
+  int executorOffline(int executorid) throws ExecutorManagerException;
+
+  int executorOnline(int executorid) throws ExecutorManagerException;
+
+  boolean checkIsOnline(int executorid) throws ExecutorManagerException;
+
+  Set<DmsBusPath> getDmsBusPathFromDb(String jobCode, String lastMonthString);
+
+  void insertOrUpdate(DmsBusPath dmsBusPath);
+
+  long getFinalScheduleTime(long triggerInitTime);
+
+  JobHook getJobHook(String jobCode);
+
+  HoldBatchAlert getHoldBatchAlert(long id);
+
+  void updateHoldBatchFrequentStatus(HoldBatchAlert holdBatchAlert);
+
+  void updateHoldBatchAlertStatus(HoldBatchAlert holdBatchAlert);
 }

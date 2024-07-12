@@ -22,10 +22,10 @@ import azkaban.executor.ExecutorManagerException;
 import azkaban.executor.JdbcExecutorLoader;
 import azkaban.project.ProjectLoader;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.UserVariable;
+import azkaban.executor.UserVariable;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserLoader;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -98,7 +98,7 @@ public class UserParamsService {
         int ret = 0;
         try {
             ret = jdbcExecutorLoader.updateUserVariable(userVariable);
-        }catch (ExecutorManagerException e){
+        }catch (Exception e){
             logger.error("update UserVariable failed");
         }
         if(ret != 0) {

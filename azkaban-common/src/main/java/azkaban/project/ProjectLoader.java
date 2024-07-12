@@ -282,4 +282,6 @@ public interface ProjectLoader {
   List<ProjectPermission> fetchAllPermissionsForProject(Project project) throws ProjectManagerException;
 
   List<ProjectVersion> getProjectVersions(Project id, int num, int skip) throws ProjectManagerException ;
+
+    List<Project> fetchAllProjects(int active);
 }

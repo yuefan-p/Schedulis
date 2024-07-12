@@ -16,20 +16,22 @@
 
 package azkaban;
 
+import azkaban.batch.HoldBatchAlert;
 import azkaban.executor.*;
 import azkaban.executor.ExecutorLogEvent.EventType;
 import azkaban.flow.Flow;
 import azkaban.history.ExecutionRecover;
 import azkaban.history.RecoverTrigger;
+import azkaban.jobhook.JobHook;
 import azkaban.project.Project;
 import azkaban.utils.FileIOUtils.LogData;
 import azkaban.utils.Pair;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.DepartmentGroup;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
-import com.webank.wedatasphere.schedulis.common.executor.UserVariable;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.executor.DepartmentGroup;
+import azkaban.executor.ExecutionCycle;
+import azkaban.executor.UserVariable;
+import azkaban.log.LogFilterEntity;
+import azkaban.system.entity.WtssUser;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -833,4 +835,65 @@ public class MockExecutorLoader implements ExecutorLoader {
       throws ExecutorManagerException {
     return null;
   }
+
+  @Override
+  public String getEventType(String topic, String msgName) {
+    return null;
+  }
+
+  @Override
+  public UserVariable findUserVariableByKey(String key) throws ExecutorManagerException {
+    return null;
+  }
+
+  @Override
+  public int executorOffline(int executorid) {
+    return 0;
+  }
+
+  @Override
+  public int executorOnline(int executorid) {
+    return 0;
+  }
+
+  @Override
+  public boolean checkIsOnline(int executorid) {
+    return false;
+  }
+
+  @Override
+  public Set<DmsBusPath> getDmsBusPathFromDb(String jobCode, String lastMonthString) {
+    return null;
+  }
+
+  @Override
+  public void insertOrUpdate(DmsBusPath dmsBusPath) {
+
+  }
+
+    @Override
+    public long getFinalScheduleTime(long triggerInitTime) {
+        return 0;
+    }
+
+  @Override
+  public JobHook getJobHook(String jobCode) {
+    return null;
+  }
+
+    @Override
+    public HoldBatchAlert getHoldBatchAlert(long id) {
+        return null;
+    }
+
+  @Override
+  public void updateHoldBatchFrequentStatus(HoldBatchAlert holdBatchAlert) {
+
+  }
+
+  @Override
+  public void updateHoldBatchAlertStatus(HoldBatchAlert holdBatchAlert) {
+
+  }
+
 }

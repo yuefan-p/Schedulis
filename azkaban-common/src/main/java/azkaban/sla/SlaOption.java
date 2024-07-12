@@ -70,6 +70,8 @@ public class SlaOption {
   public static final String ACTION_CANCEL_FLOW = "SlaCancelFlow";
   public static final String ACTION_ALERT = "SlaAlert";
   public static final String ACTION_KILL_JOB = "SlaKillJob";
+  public static final String INFO_ALERTER_WAY = "AlerterWay";
+  public static final String INFO_ABS_TIME = "AbsTime";
   private static final DateTimeFormatter fmt = DateTimeFormat
       .forPattern("YYYY-MM-dd HH:mm:ss");
 //      .forPattern("MM/dd, YYYY HH:mm");

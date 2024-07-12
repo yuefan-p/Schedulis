@@ -15,6 +15,22 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.web.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>5.8.12</version>
+    </dependency>
+    <dependency>
       <groupId>com.webank.wedatasphere.schedulis</groupId>
       <artifactId>az-core</artifactId>
       <version>${schedulis.version}</version>
@@ -295,6 +311,12 @@
       <groupId>com.webank.wedatasphere.dss</groupId>
       <artifactId>dss-linkis-node-execution</artifactId>
       <version>${dss.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>5.2.22.RELEASE</version>
       <scope>compile</scope>
     </dependency>
 

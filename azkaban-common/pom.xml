@@ -291,6 +291,11 @@
           <version>2.5</version>
           <scope>compile</scope>
       </dependency>
+      <dependency>
+          <groupId>cn.webank.bsp</groupId>
+          <artifactId>encrypt</artifactId>
+          <version>1.0.3</version>
+      </dependency>
 
   </dependencies>
 

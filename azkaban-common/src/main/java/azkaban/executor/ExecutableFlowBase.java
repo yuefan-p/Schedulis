@@ -21,6 +21,7 @@ import azkaban.flow.FlowProps;
 import azkaban.flow.Node;
 import azkaban.flow.SpecialJobTypes;
 import azkaban.project.Project;
+import azkaban.utils.Props;
 import azkaban.utils.TypedMapWrapper;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ public class ExecutableFlowBase extends ExecutableNode {
   private ArrayList<String> startNodes;
   private ArrayList<String> endNodes;
   private String flowId;
+  private String runDate;
 
   public ExecutableFlowBase(final Project project, final Node node, final Flow flow,
       final ExecutableFlowBase parent) {
@@ -405,5 +407,40 @@ public class ExecutableFlowBase extends ExecutableNode {
       return this.getParentFlow().getFlowPath() + "," + this.getId() + ":"
           + this.getFlowId();
     }
+  }
+
+  public Map<String, Object> getOtherOption() {
+    if (this.getParentFlow() != null) {
+      return this.getParentFlow().getOtherOption();
+    }
+
+    return new HashMap<>();
+  }
+
+  public int getFlowType() {
+    if (this.getParentFlow() != null) {
+      return this.getParentFlow().getFlowType();
+    }
+
+    return -1;
+  }
+
+  public ExecutionOptions getExecutionOptions() {
+    if (this.getParentFlow() != null) {
+      return this.getParentFlow().getExecutionOptions();
+    }
+
+    return new ExecutionOptions();
+  }
+
+  public String getRunDate() {
+    if (this.runDate != null) {
+      return this.runDate;
+    }
+    if (this.getParentFlow() != null) {
+      return this.getParentFlow().getRunDate();
+    }
+
+    return "";
   }
 }

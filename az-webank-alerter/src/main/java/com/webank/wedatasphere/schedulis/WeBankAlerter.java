@@ -19,20 +19,25 @@
 package com.webank.wedatasphere.schedulis;
 
 import azkaban.alert.Alerter;
+import azkaban.batch.HoldBatchAlert;
+import azkaban.eventnotify.entity.EventNotify;
 import azkaban.executor.ExecutableFlow;
 import azkaban.executor.ExecutableFlowBase;
 import azkaban.executor.ExecutableNode;
 import azkaban.executor.ExecutionOptions;
 import azkaban.executor.Executor;
+import azkaban.executor.ExecutorLoader;
 import azkaban.executor.ExecutorManagerException;
 import azkaban.executor.Status;
 import azkaban.flow.FlowUtils;
 import azkaban.history.ExecutionRecover;
+import azkaban.project.entity.FlowBusiness;
+import azkaban.scheduler.Schedule;
 import azkaban.sla.SlaOption;
 import azkaban.utils.Props;
 import azkaban.utils.Utils;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.executor.ExecutionCycle;
+import azkaban.system.entity.WtssUser;
 import com.webank.wedatasphere.schedulis.common.utils.HttpUtils;
 import com.webank.wedatasphere.schedulis.ims.IMSAlert;
 import com.webank.wedatasphere.schedulis.ims.IMSAlert.AlertLevel;
@@ -89,6 +94,11 @@ public class WeBankAlerter implements Alerter {
   }
 
   @Override
+  public String alertOnIMSRegistStart(String projectName, String flowId, FlowBusiness flowBusiness, Props props) {
+    return null;
+  }
+
+  @Override
   public void alertOnIMSRegistFinish(ExecutableFlow exflow,Map<String, Props> sharedProps,Logger logger) throws Exception {
 //    loadAllProperties(exflow);
     //上报IMS 业务逻辑实现
@@ -99,6 +109,16 @@ public class WeBankAlerter implements Alerter {
   }
 
   @Override
+  public void alertOnIMSUploadForFlow(ExecutableFlowBase flowBase, Map<String, Props> sharedProps, Logger logger, FlowBusiness flowBusiness, ExecutableNode node, Props props) throws Exception {
+
+  }
+
+  @Override
+  public void alertOnIMSUploadForNode(ExecutableFlowBase flowBase, Logger logger, FlowBusiness flowBusiness, ExecutableNode node, Props props) {
+
+  }
+
+  @Override
   public void alertOnIMSRegistError(ExecutableFlow exflow,Map<String, Props> sharedProps,Logger logger) throws Exception {
 //    loadAllProperties(exflow);
     //上报IMS 业务逻辑实现
@@ -106,6 +126,11 @@ public class WeBankAlerter implements Alerter {
 //    HttpUtils.uploadFlowStatusToIMS(exflow, this.props,
 //            this.sharedProps.get(exflow.getExecutableNode(((ExecutableFlowBase)exflow).getStartNodes().get(0)).getPropsSource()),
 //            this.logger);
+  }
+
+  @Override
+  public void alertOnSla(SlaOption slaOption, ExecutableFlow exflow, String alertType) throws Exception {
+
   }
 
   @Override
@@ -183,6 +208,16 @@ public class WeBankAlerter implements Alerter {
     this.doSlaAlerter(slaOption, exflow);
   }
 
+  @Override
+  public void alertOnIMSRegistFlowStart(ExecutableFlow exflow, Map<String, Props> sharedProps, Logger logger, FlowBusiness flowBusiness, Props props) throws Exception {
+
+  }
+
+  @Override
+  public void alertOnIMSRegistNodeStart(ExecutableFlow exflow, Logger logger, FlowBusiness flowBusiness, Props props, ExecutableNode node) throws Exception {
+
+  }
+
   /**
    * 超时SLA告警发送
    * @param slaOption
@@ -233,6 +268,11 @@ public class WeBankAlerter implements Alerter {
   @Override
   public void alertOnFinishSla(SlaOption slaOption, ExecutableFlow exflow) throws Exception {
     this.doFinishSlaAlerter(slaOption, exflow);
+  }
+
+  @Override
+  public void alertOnFlowStarted(ExecutableFlow executableFlow, List<EventNotify> eventNotifies) throws Exception {
+
   }
 
   /**
@@ -1261,6 +1301,11 @@ public class WeBankAlerter implements Alerter {
   }
 
   @Override
+  public void sendAlert(List<String> alterList, String subject, String body) {
+
+  }
+
+  @Override
   public void alertOnCycleFlowInterrupt(ExecutableFlow flow, ExecutionCycle cycleFlow, List<String> emails, String alertLevel, String... extraReasons) {
     String newTitle = String.format("[%s:%s] %s", flow.getProjectName(), flow.getFlowId(), this.title);
     final String imsAlerterWays = this.props.getString("alarm.alerterWay");
@@ -1337,6 +1382,21 @@ public class WeBankAlerter implements Alerter {
     }
 
     this.doAlertByWeBankForHistoryRecover(executionRecover, emailList, AlertLevel.valueOf(historyRecoverAlertLevel));
+
+  }
+
+  @Override
+  public void alertOnHoldBatch(HoldBatchAlert holdBatchAlert, ExecutorLoader executorLoader, boolean isFrequent) {
+
+  }
+
+  @Override
+  public void doMissSchedulesAlerter(Set<Schedule> scheduleList, Date startTime, Date shutdownTime) {
+
+  }
+
+  @Override
+  public void alertOnSingnalBacklog(int jobId, Map<String, String> consumeInfo) {
 
   }
 

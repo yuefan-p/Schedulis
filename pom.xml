@@ -83,23 +83,26 @@
         <velocity.version>1.7</velocity.version>
         <velocity.tools.version>2.0</velocity.tools.version>
         <grizzly.version>3.0.0</grizzly.version>
-        <opendjcore.version>3.0.0</opendjcore.version>
+        <opendjcore.version>4.4.7</opendjcore.version>
         <log4j-api.version>2.17.0</log4j-api.version>
         <poi.version>3.17</poi.version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <fasterxml.jackson.version>2.14.0</fasterxml.jackson.version>
-        <dss.version>1.1.0.7-SNAPSHOT</dss.version>
-        <linkis.version>1.1.6-webank</linkis.version>
-        <encrypt.version>1.0.2</encrypt.version>
+        <dss.version>1.1.1</dss.version>
+        <linkis.version>1.4.0-SNAPSHOT</linkis.version>
+        <encrypt.version>1.0.4</encrypt.version>
         <logappender.version>1.6.0-SNAPSHOT</logappender.version>
-        <MAVEN_HOME>${env.MAVEN_HOME}</MAVEN_HOME>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <werpc.version>1.8.2</werpc.version>
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -163,7 +166,16 @@
             <artifactId>protobuf-java</artifactId>
             <version>3.21.12</version>
         </dependency>
-
+        <dependency>
+            <groupId>cn.webank.weup</groupId>
+            <artifactId>weup-base</artifactId>
+            <version>0.6.138</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.13.1</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

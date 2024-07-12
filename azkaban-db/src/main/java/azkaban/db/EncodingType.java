@@ -22,7 +22,7 @@ package azkaban.db;
 // TODO kunkun-tang: This class needs to move to azkaban-db module, as database module should be
 // Deprecated soon.
 public enum EncodingType {
-  PLAIN(1), GZIP(2);
+  PLAIN(1), GZIP(2), HDFS(3);
 
   private final int numVal;
 
@@ -36,6 +36,8 @@ public enum EncodingType {
         return PLAIN;
       case 2:
         return GZIP;
+      case 3:
+        return HDFS;
       default:
         return PLAIN;
     }

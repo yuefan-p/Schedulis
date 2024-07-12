@@ -16,6 +16,7 @@
     </parent>
 
     <dependencies>
+
         <dependency>
             <groupId>com.webank.wedatasphere.schedulis</groupId>
             <artifactId>az-core</artifactId>

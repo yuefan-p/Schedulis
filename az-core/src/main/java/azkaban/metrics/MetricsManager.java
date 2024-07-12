@@ -20,6 +20,7 @@ import static azkaban.Constants.ConfigurationKeys.CUSTOM_METRICS_REPORTER_CLASS_
 import static azkaban.Constants.ConfigurationKeys.METRICS_SERVER_URL;
 
 import azkaban.utils.Props;
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
@@ -119,5 +120,9 @@ public class MetricsManager {
       log.error(String.format("No value for property: %s or %s was found",
           CUSTOM_METRICS_REPORTER_CLASS_NAME, METRICS_SERVER_URL));
     }
+  }
+
+  public Counter addCounter(final String name) {
+    return this.registry.counter(name);
   }
 }

@@ -213,7 +213,7 @@ public class SystemUserManager implements UserManager  {
     }
   }
 
-  @Override
+
   public User validateNonRealNameUser(String username, String password, String normalUserName, String normalPassword, UserType type) throws UserManagerException, IOException {
     //运维用户名密码判空
     if (username == null || username.trim().isEmpty()) {
@@ -250,7 +250,6 @@ public class SystemUserManager implements UserManager  {
     return user;
   }
 
-  @Override
   public void validDepartmentOpsUser(String username, String normalUserName) throws UserManagerException {
     if (props.getBoolean("wtss.opsuser.department.check", true)) {
       try {

@@ -59,7 +59,7 @@ import com.webank.wedatasphere.schedulis.common.system.SystemManager;
 import com.webank.wedatasphere.schedulis.common.system.SystemUserManagerException;
 import com.webank.wedatasphere.schedulis.common.system.common.TransitionService;
 import com.webank.wedatasphere.schedulis.common.system.entity.WebankDepartment;
-import com.webank.wedatasphere.schedulis.common.system.entity.WtssUser;
+import azkaban.system.entity.WtssUser;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;

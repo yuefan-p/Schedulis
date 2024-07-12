@@ -1244,7 +1244,12 @@ public class JdbcProjectImpl implements ProjectLoader {
     return resultList;
   }
 
-  @Override
+    @Override
+    public List<Project> fetchAllProjects(int active) {
+        return null;
+    }
+
+    @Override
   public List<ProjectPermission> fetchAllPermissionsForProject(
       final Project project)
       throws ProjectManagerException {

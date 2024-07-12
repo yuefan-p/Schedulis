@@ -19,7 +19,7 @@ import azkaban.Constants.ConfigurationKeys;
 import azkaban.event.EventHandler;
 import azkaban.flow.FlowUtils;
 import azkaban.history.ExecutionRecover;
-import com.webank.wedatasphere.schedulis.common.log.LogFilterEntity;
+import azkaban.log.LogFilterEntity;
 import azkaban.metrics.CommonMetrics;
 import azkaban.project.Project;
 import azkaban.project.ProjectWhitelist;
@@ -28,7 +28,7 @@ import azkaban.utils.FileIOUtils;
 import azkaban.utils.FileIOUtils.LogData;
 import azkaban.utils.Pair;
 import azkaban.utils.Props;
-import com.webank.wedatasphere.schedulis.common.executor.ExecutionCycle;
+import azkaban.executor.ExecutionCycle;
 
 import java.io.IOException;
 import java.lang.Thread.State;
